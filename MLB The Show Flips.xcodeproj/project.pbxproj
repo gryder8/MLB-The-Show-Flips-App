@@ -12,6 +12,8 @@
 		864207442782A65C0045FA10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207432782A65C0045FA10 /* Assets.xcassets */; };
 		864207472782A65C0045FA10 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207462782A65C0045FA10 /* Preview Assets.xcassets */; };
 		8642074E2782A67E0045FA10 /* CriteriaSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642074D2782A67E0045FA10 /* CriteriaSettings.swift */; };
+		864207512782C9A80045FA10 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207502782C9A80045FA10 /* Colors.swift */; };
+		864207532782CA550045FA10 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207522782CA550045FA10 /* ColorExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +23,8 @@
 		864207432782A65C0045FA10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		864207462782A65C0045FA10 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8642074D2782A67E0045FA10 /* CriteriaSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaSettings.swift; sourceTree = "<group>"; };
+		864207502782C9A80045FA10 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		864207522782CA550045FA10 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +59,8 @@
 			children = (
 				8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */,
 				864207412782A65B0045FA10 /* ContentView.swift */,
+				864207502782C9A80045FA10 /* Colors.swift */,
+				864207522782CA550045FA10 /* ColorExtension.swift */,
 				8642074D2782A67E0045FA10 /* CriteriaSettings.swift */,
 				864207432782A65C0045FA10 /* Assets.xcassets */,
 				864207452782A65C0045FA10 /* Preview Content */,
@@ -141,8 +147,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				864207422782A65B0045FA10 /* ContentView.swift in Sources */,
+				864207512782C9A80045FA10 /* Colors.swift in Sources */,
 				864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */,
 				8642074E2782A67E0045FA10 /* CriteriaSettings.swift in Sources */,
+				864207532782CA550045FA10 /* ColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

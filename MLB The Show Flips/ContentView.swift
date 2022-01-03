@@ -76,17 +76,17 @@ class ContentViewModel: ObservableObject {
 }
 
 class Criteria {
-    let minProfit = 5000
-    let budget = 45000
-    let startPage = 1
-    let endPage = 1
-    let maxSize = 20
-    let excludedSeries:[String] = []
+    static var minProfit = 5000
+    static var budget = 45000
+    static var startPage = 1
+    static var endPage = 1
+    static var maxSize = 20
+    static var excludedSeries:[String] = []
 }
 
 class Calculator {
     //["Topps Now"]
-    let criteria = Criteria()
+    //let criteria = Criteria()
     
     func flipProfit(_ player: PlayerListing) -> Int {
         let buyActual:Double = Double(player.best_buy_price + 1)
@@ -99,8 +99,8 @@ class Calculator {
         listings.sort { (lhs: PlayerListing, rhs: PlayerListing) -> Bool in
             return flipProfit(lhs) < flipProfit(rhs)
         }
-        if (trim && listings.count > criteria.maxSize) {
-            let range = criteria.maxSize...listings.count-1
+        if (trim && listings.count > Criteria.maxSize) {
+            let range = Criteria.maxSize...listings.count-1
             listings.removeSubrange(range)
         }
         return listings
@@ -108,7 +108,7 @@ class Calculator {
     
     func meetsFlippingCriteria(_ player: inout PlayerListing) -> Bool {
         let playerItem = player.item
-        if (player.best_buy_price > criteria.budget || criteria.excludedSeries.contains(playerItem.series)) {
+        if (player.best_buy_price > Criteria.budget || Criteria.excludedSeries.contains(playerItem.series)) {
             return false
         }
         
@@ -152,12 +152,49 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
 
 struct ContentView: View {
     
+    init() {
+        // this is not the same as manipulating the proxy directly
+        let standardAppearance = UINavigationBarAppearance()
+        
+        // this overrides everything you have set up earlier.
+        standardAppearance.configureWithTransparentBackground()
+        let scrollingAppearance = standardAppearance
+        scrollingAppearance.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.clear
+        ]
+        
+        // this only applies to big titles
+//        appearance.largeTitleTextAttributes = [
+//            .font : UIFont.systemFont(ofSize: 20),
+//            NSAttributedString.Key.foregroundColor : UIColor.black
+//        ]
+        // this only applies to small titles
+//        appearance.titleTextAttributes = [
+//            .font : UIFont.systemFont(ofSize: 20),
+//            NSAttributedString.Key.foregroundColor : UIColor.black
+//        ]
+        
+        //In the following two lines you make sure that you apply the style for good
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollingAppearance
+        UINavigationBar.appearance().standardAppearance = standardAppearance
+        
+        // This property is not present on the UINavigationBarAppearance
+        // object for some reason and you have to leave it til the end
+        UINavigationBar.appearance().tintColor = .black
+        
+    }
+    
+    
     @ObservedObject var vm = ContentViewModel()
     let calc = Calculator()
     let criteria = Criteria()
     
     var body: some View {
+        
         NavigationView {
+            LinearGradient(gradient: Gradient(colors: [.teal, .blue]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.vertical)
+                .overlay(
             ScrollView {
                 if vm.isFetching {
                     ProgressView()
@@ -168,7 +205,7 @@ struct ContentView: View {
                 VStack {
                     ForEach(vm.playerListings.reversed()) { playerListing in
                         let playerItem = playerListing.item
-                        if (calc.flipProfit(playerListing) >= criteria.minProfit) {
+                        if (calc.flipProfit(playerListing) >= Criteria.minProfit) {
                             let url = URL(string: playerItem.img)
                             AsyncImage(url: url) { image in
                                 image.fixedSize(horizontal: true, vertical: true)
@@ -187,23 +224,26 @@ struct ContentView: View {
                                     .foregroundColor(.black)
                                     .font(.system(size: 20))
                                 Text(calc.playerFlipDescription(playerListing).last ?? "None")
-                                    .foregroundColor(.gray)
-                                    .font(.system(size: 15))
+                                    .foregroundColor(Colors.darkGray)
+                                    .font(.system(size: 16))
                             }
                         }
                     }
                 }
                 
             }
+            )
+            .background(.clear)
             .navigationTitle("Flipping Cards")
             .task {
                 //await vm.fetchData(pageNum: 1)
-                for page in criteria.startPage...criteria.endPage {
+                for page in Criteria.startPage...Criteria.endPage {
                     await vm.fetchData(pageNum: page)
                 }
                 vm.playerListings = calc.sortedPlayerListings(listings: &vm.playerListings, trim: false)
             }
             .navigationBarItems(trailing: refreshButton)
+            .background(.clear)
         }
     }
     
@@ -214,16 +254,15 @@ struct ContentView: View {
                     vm.playerListings.removeAll()
                 }
                 
-                for page in criteria.startPage...criteria.endPage {
+                for page in Criteria.startPage...Criteria.endPage {
                     await vm.fetchData(pageNum: page)
                 }
             }
             
         } label: {
-            Text("Refresh")
-                .bold()
+            Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
+                .scaleEffect(1.5)
                 .foregroundColor(.teal)
-            
         }
     }
     
