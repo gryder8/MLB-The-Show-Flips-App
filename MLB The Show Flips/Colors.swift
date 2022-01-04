@@ -15,4 +15,20 @@ internal enum Colors {
     static var darkTeal: Color {
         return Color(hexValue: 0x008080)
     }
+    
+    static var darkYellow: Color {
+        return Color(hexValue: 0xFFD700)
+    }
+
+    static var darkerGray: Color {
+        return Color(hexValue: 0x505456)
+    }
+    
+    static var midGray: Color {
+        return Color(hexValue: 0x737373)
+    }
+    
+    static var backgroundGradientColors: [Color] {
+        return [.teal, .blue]
+    }
 }

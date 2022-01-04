@@ -7,32 +7,7 @@
 
 import SwiftUI
 
-
-struct Page: Decodable {
-    let listings: [PlayerListing]
-}
-
-struct PlayerListing: Decodable, Identifiable {
-    let id = UUID()
-    let listing_name: String
-    var best_sell_price, best_buy_price: Int
-    let item: PlayerItem
-    
-    private enum CodingKeys: Any, CodingKey {
-        case listing_name, best_sell_price, best_buy_price, item
-    }
-}
-
-struct PlayerItem: Decodable {
-    let uuid, name, rarity, team, team_short_name: String
-    let img: String //img url
-    let ovr: Int
-    let series, display_position: String
-    let series_year: Int
-}
-
-
-
+ 
 class ContentViewModel: ObservableObject {
     
     @Published var isFetching = false
@@ -75,70 +50,7 @@ class ContentViewModel: ObservableObject {
     
 }
 
-class Criteria {
-    static var minProfit = 5000
-    static var budget = 45000
-    static var startPage = 1
-    static var endPage = 1
-    static var maxSize = 20
-    static var excludedSeries:[String] = []
-}
 
-class Calculator {
-    //["Topps Now"]
-    //let criteria = Criteria()
-    
-    func flipProfit(_ player: PlayerListing) -> Int {
-        let buyActual:Double = Double(player.best_buy_price + 1)
-        let sellActual:Double = Double(player.best_sell_price - 1) * 0.9
-        return Int(sellActual - buyActual)
-    }
-    
-    func sortedPlayerListings(listings: inout [PlayerListing], trim: Bool) -> [PlayerListing] { //returns the array of player items sorted by their flip values
-        //sorted in place
-        listings.sort { (lhs: PlayerListing, rhs: PlayerListing) -> Bool in
-            return flipProfit(lhs) < flipProfit(rhs)
-        }
-        if (trim && listings.count > Criteria.maxSize) {
-            let range = Criteria.maxSize...listings.count-1
-            listings.removeSubrange(range)
-        }
-        return listings
-    }
-    
-    func meetsFlippingCriteria(_ player: inout PlayerListing) -> Bool {
-        let playerItem = player.item
-        if (player.best_buy_price > Criteria.budget || Criteria.excludedSeries.contains(playerItem.series)) {
-            return false
-        }
-        
-        //assign a value for players with no buy orders and thus no buy price
-        if (player.best_buy_price == 0 && playerItem.ovr >= 85) {
-            player.best_buy_price = 5000
-        } else if (player.best_buy_price == 0 && playerItem.ovr < 85 && playerItem.ovr >= 80) {
-            player.best_buy_price = 1000
-        } else if (player.best_buy_price == 0 && playerItem.ovr < 80 && playerItem.ovr >= 75) {
-            player.best_buy_price = 1000
-        }
-        
-        if (playerItem.ovr >= 85 && player.best_buy_price < 5000) { //check for cards listed under
-            return false
-        } else if (playerItem.ovr >= 80 && playerItem.ovr < 85 && player.best_buy_price < 1000) {
-            return false
-        }
-        
-        return true
-    }
-    
-    func playerFlipDescription(_ playerListing: PlayerListing) -> [String] {
-        let playerItem = playerListing.item
-        let flipVal = flipProfit(playerListing)
-        let nameAndFlipMargin = "\(playerListing.listing_name): +\(flipVal) stubs"
-        let desc = "\(playerItem.ovr) OVR \(playerItem.display_position), \(playerItem.team), \(playerItem.series_year): \(playerItem.series)"
-        return [nameAndFlipMargin, desc]
-    }
-    
-}
 
 struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -163,9 +75,11 @@ struct ContentView: View {
             NSAttributedString.Key.foregroundColor: UIColor.clear
         ]
         
+        
+        
         // this only applies to big titles
-//        appearance.largeTitleTextAttributes = [
-//            .font : UIFont.systemFont(ofSize: 20),
+//        standardAppearance.largeTitleTextAttributes = [
+//            .font : Font.system(size: 30, weight: .bold, design: .rounded),
 //            NSAttributedString.Key.foregroundColor : UIColor.black
 //        ]
         // this only applies to small titles
@@ -185,9 +99,10 @@ struct ContentView: View {
     }
     
     
-    @ObservedObject var vm = ContentViewModel()
+    @ObservedObject var viewModel = ContentViewModel()
     let calc = Calculator()
     let criteria = Criteria()
+    let urlBaseString = "https://mlb21.theshow.com/items/"
     
     var body: some View {
         
@@ -196,18 +111,17 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
             ScrollView {
-                if vm.isFetching {
+                if viewModel.isFetching {
                     ProgressView()
                         .progressViewStyle(DarkBlueShadowProgressViewStyle())
                         .scaleEffect(1.5, anchor: .center)
                 }
                 
                 VStack {
-                    ForEach(vm.playerListings.reversed()) { playerListing in
+                    ForEach(viewModel.playerListings.reversed()) { playerListing in
                         let playerItem = playerListing.item
                         if (calc.flipProfit(playerListing) >= Criteria.minProfit) {
-                            let url = URL(string: playerItem.img)
-                            AsyncImage(url: url) { image in
+                            AsyncImage(url: playerItem.img) { image in
                                 image.fixedSize(horizontal: true, vertical: true)
                                 
                             } placeholder: {
@@ -216,14 +130,21 @@ struct ContentView: View {
                                     .scaleEffect(1.5, anchor: .center)
                             }
                             VStack {
-                                let urlBaseString = "https://mlb21.theshow.com/items/"
-                                let text = calc.playerFlipDescription(playerListing).first ?? "Error"
-                                let url: URL = URL(string: "\(urlBaseString + playerItem.uuid)")!
                                 
+                                let text = calc.playerFlipDescription(playerListing).0
+                                let url: URL = URL(string: "\(urlBaseString + playerItem.uuid)")!
+                                HStack (spacing: 0){
                                 Link("\(text)", destination: url)
                                     .foregroundColor(.black)
-                                    .font(.system(size: 20))
-                                Text(calc.playerFlipDescription(playerListing).last ?? "None")
+                                    .font(.system(size: 22))
+                                    
+                                    Image("stubs")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 20, height: 20, alignment: .topLeading)
+                                        
+                                }
+                                Text(calc.playerFlipDescription(playerListing).1)
                                     .foregroundColor(Colors.darkGray)
                                     .font(.system(size: 16))
                             }
@@ -236,13 +157,44 @@ struct ContentView: View {
             .background(.clear)
             .navigationTitle("Flipping Cards")
             .task {
-                //await vm.fetchData(pageNum: 1)
-                for page in Criteria.startPage...Criteria.endPage {
-                    await vm.fetchData(pageNum: page)
+                
+                //await viewModel.fetchData(pageNum: 1)
+//                for page in Criteria.startPage...Criteria.endPage {
+//                    if (vm.playerListings.count < Criteria.maxSize) {
+//                        await vm.fetchData(pageNum: page)
+//                    }
+//                }
+                
+                
+                var page = Criteria.startPage
+                var done = false
+
+                while (!done) {
+                    await viewModel.fetchData(pageNum: page)
+
+                    page+=1
+                    
+                    if (page > Criteria.endPage || viewModel.playerListings.count < Criteria.maxCardsAtOnce) {
+                        done = true
+                    }
                 }
-                vm.playerListings = calc.sortedPlayerListings(listings: &vm.playerListings, trim: false)
+                viewModel.playerListings = calc.sortedPlayerListings(listings: &viewModel.playerListings, trim: false)
             }
-            .navigationBarItems(trailing: refreshButton)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    refreshButton
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("Click a card name to open on the web")
+                        .italic()
+                        .font(.system(size: 14))
+                        .lineLimit(1)
+                        
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    settingsButton
+                }
+            }
             .background(.clear)
         }
     }
@@ -251,20 +203,39 @@ struct ContentView: View {
         Button {
             Task.init {
                 withAnimation(.easeIn) {
-                    vm.playerListings.removeAll()
+                    viewModel.playerListings.removeAll()
                 }
                 
-                for page in Criteria.startPage...Criteria.endPage {
-                    await vm.fetchData(pageNum: page)
+                var page = Criteria.startPage
+                var done = false
+                
+                while (!done) {
+                    await viewModel.fetchData(pageNum: page)
+
+                    page+=1
+                    
+                    if (page > Criteria.endPage || viewModel.playerListings.count < Criteria.maxCardsAtOnce) {
+                        done = true
+                    }
                 }
+                viewModel.playerListings = calc.sortedPlayerListings(listings: &viewModel.playerListings, trim: true)
             }
             
         } label: {
             Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
                 .scaleEffect(1.5)
-                .foregroundColor(.teal)
+                .foregroundColor(.black)
         }
     }
+    
+    private var settingsButton: some View {
+        NavigationLink(destination: CriteriaController()) {
+            Image(systemName: "gearshape")
+                .foregroundColor(.black)
+                .scaleEffect(1.5)
+        }
+    }
+    
     
 }
 
@@ -272,5 +243,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .background(.gray)
+.previewInterfaceOrientation(.portrait)
     }
 }
