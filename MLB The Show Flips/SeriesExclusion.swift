@@ -7,10 +7,11 @@
 
 import SwiftUI
 
+
+
 struct SeriesExclusion: View {
     private let cardSeries:[String] = ["2021 All Star", "2021 Postseason", "2nd Half", "All-Star", "Awards", "Finest", "Future Stars", "Home Run Derby", "Live", "Milestone", "Monthly Awards", "Postseason", "Prime", "Prospect", "Rookie", "Signature", "The 42", "Topps Now", "Veteran"]
-    @State private var selection = Set<String>()
-    
+    @State private var selection: Set<String> = Set(Criteria.excludedSeries.map{$0})
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     var backBtn : some View { Button(action: {
@@ -33,7 +34,9 @@ struct SeriesExclusion: View {
         VStack{
                 List(cardSeries, id: \.self, selection: $selection) { series in
                     Text(series)
+                
                 }
+                .listStyle(.insetGrouped)
                 .onDisappear(perform: {
                     Criteria.excludedSeries = Array(selection)
                 })

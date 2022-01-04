@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//FIX: Duplicate entries on entering new min profit in settings screen
  
 class ContentViewModel: ObservableObject {
     
@@ -100,6 +101,9 @@ struct ContentView: View {
     
     
     @ObservedObject var viewModel = ContentViewModel()
+    @GestureState var dragAmount = CGSize.zero
+    @State var hidesNavBar = false
+    
     let calc = Calculator()
     let criteria = Criteria()
     let urlBaseString = "https://mlb21.theshow.com/items/"
@@ -155,7 +159,7 @@ struct ContentView: View {
             }
             )
             .background(.clear)
-            .navigationTitle("Flipping Cards")
+            .navigationTitle("Best Flips")
             .task {
                 
                 //await viewModel.fetchData(pageNum: 1)
