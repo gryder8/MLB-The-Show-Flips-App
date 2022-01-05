@@ -8,10 +8,10 @@
 import Foundation
 
 class Criteria {
-    static var minProfit = 7000
+    static var minProfit = 5000
     static var budget = 45000
     static var startPage = 1
     static var endPage = 1
-    static var maxCardsAtOnce = 10
+    static var maxCardsAtOnce = 30 //should be able to load everything in the page
     static var excludedSeries:[String] = []
 }

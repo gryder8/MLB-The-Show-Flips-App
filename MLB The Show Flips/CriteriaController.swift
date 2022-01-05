@@ -84,6 +84,7 @@ struct CriteriaController: View {
                         })
                             .padding(.horizontal, leftEdge)
                             .padding(.vertical, 15)
+                            .hidden()
                         
                         Stepper("Ending marketplace page: \(endPage)", onIncrement: {
                             endPage = min(lastPage, startPage+maxPageSpan, endPage+1)
@@ -114,6 +115,7 @@ struct CriteriaController: View {
                 .frame(width: 200, height: 40)
                 .background(Colors.midGray)
                 .cornerRadius(20)
+                
             
         }
     }

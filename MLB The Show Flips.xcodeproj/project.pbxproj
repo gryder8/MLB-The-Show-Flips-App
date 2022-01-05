@@ -19,6 +19,7 @@
 		86420759278395790045FA10 /* Criteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420758278395790045FA10 /* Criteria.swift */; };
 		8642075D2783A3200045FA10 /* testView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642075C2783A3200045FA10 /* testView.swift */; };
 		86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusion.swift */; };
+		86D861952785057400807F4E /* ContentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* ContentDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		8642075C2783A3200045FA10 /* testView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testView.swift; sourceTree = "<group>"; };
 		86D861912783FCD400807F4E /* SeriesExclusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusion.swift; sourceTree = "<group>"; };
 		86D86193278417AE00807F4E /* MLB-The-Show-Flips-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MLB-The-Show-Flips-Info.plist"; sourceTree = SOURCE_ROOT; };
+		86D861942785057400807F4E /* ContentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 				864207522782CA550045FA10 /* ColorExtension.swift */,
 				8642074D2782A67E0045FA10 /* CriteriaController.swift */,
 				86D861912783FCD400807F4E /* SeriesExclusion.swift */,
+				86D861942785057400807F4E /* ContentDataSource.swift */,
 				864207432782A65C0045FA10 /* Assets.xcassets */,
 				8642075C2783A3200045FA10 /* testView.swift */,
 				864207452782A65C0045FA10 /* Preview Content */,
@@ -172,6 +175,7 @@
 				864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */,
 				86420759278395790045FA10 /* Criteria.swift in Sources */,
 				8642075D2783A3200045FA10 /* testView.swift in Sources */,
+				86D861952785057400807F4E /* ContentDataSource.swift in Sources */,
 				8642074E2782A67E0045FA10 /* CriteriaController.swift in Sources */,
 				864207552783943A0045FA10 /* DataStructs.swift in Sources */,
 				864207532782CA550045FA10 /* ColorExtension.swift in Sources */,
