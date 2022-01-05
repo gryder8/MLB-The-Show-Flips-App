@@ -35,35 +35,27 @@ import SwiftUI
 
 
 struct testView: View {
-    private let cardSeries:[String] = ["2021 All Star", "2021 Postseason", "2nd Half", "All-Star", "Awards", "Finest", "Future Stars", "Home Run Derby", "Live", "Milestone", "Monthly Awards", "Postseason", "Prime", "Prospect", "Rookie", "Signature", "The 42", "Topps Now", "Veteran"]
-    @State private var selection = Set<String>()
+    
+    
     var body: some View {
-        VStack {
-            HStack {
-            Text("+6000 ")
-                    .font(.system(size: 22, design: .rounded))
-                    //.font(.system(size: 30))
-            Image("stubs")
-                    .resizable()
-                    //.scaleEffect(0.08)
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 20, height: 20, alignment: .topLeading)
-            }.padding(.top, 30.0)
-            List(cardSeries, id: \.self, selection: $selection) { series in
-                Text(series)
-            }
-            .padding(.all)
-            .navigationTitle("Exclude Card Series:")
-            .toolbar {
-                EditButton()
-            .frame(width: 500, height: 200, alignment: .bottom)
-            }
+        Text("hello world")
+    }
+    
+    private var excludeSeriesButton: some View {
+        Button {
             
-            Text("hello world")
-                .padding(.top, 15.0)
-            Image(systemName: "tray.2")
-            Image(systemName: "tray.2")
-            Image(systemName: "tray.2")
+        } label: {
+            HStack {
+                Text("Exclude Card Series")
+                Image(systemName: "arrow.right")
+            }.foregroundColor(.white)
+                .foregroundColor(.black)
+                .padding(.vertical, 10)
+                .frame(width: 200, height: 40)
+                .background(Colors.midGray)
+                .cornerRadius(20)
+            
+            
         }
     }
 }

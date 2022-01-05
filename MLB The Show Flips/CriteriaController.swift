@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension Int {
     var double: Double {
@@ -22,11 +23,11 @@ struct CriteriaController: View {
     
     init() {} //empty
     
-    @State var minProfit = 5000 {
-        didSet  {
-            Criteria.minProfit = self.minProfit
-        }
-    }
+    @State var minProfit = String(Criteria.minProfit)
+    
+    
+    @FocusState private var minProfitFocused: Bool
+    
     @State var budget = 45000 {
         didSet  {
             Criteria.budget = self.budget
@@ -60,31 +61,55 @@ struct CriteriaController: View {
     
     private let cardSeries:[String] = ["2021 All Star", "2021 Postseason", "2nd Half", "All-Star", "Awards", "Finest", "Future Stars", "Home Run Derby", "Live", "Milestone", "Monthly Awards", "Postseason", "Prime", "Prospect", "Rookie", "Signature", "The 42", "Topps Now", "Veteran"]
     @State private var selection = Set<String>()
-    
+    @State private var showAlert = false
     
     var body: some View {
         //NavigationView {
+        
+        
+        
         LinearGradient(gradient: Gradient(colors: Colors.backgroundGradientColors), startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 GeometryReader { geometry in
                     let leftEdge = geometry.safeAreaInsets.leading + 50
-                    VStack(alignment: .leading) {
-                        HStack  (spacing: 0){
-                            Text("Min Profit: ")
-                            TextField("Min profit", value: $minProfit, format: .number)
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.numberPad)
-                                .frame(width: 90, height: 20, alignment: .leading)
+                    let mid = (geometry.safeAreaInsets.trailing - geometry.safeAreaInsets.leading) / 2
+                    VStack (alignment: .leading) {
+                        VStack {
+                            HStack  (spacing: 0){
+                                Text("Min Profit: ")
+                                TextField("Min Profit", text: $minProfit)
+                                    .onReceive(Just(minProfit)) { newValue in
+                                        let filtered = newValue.filter { "0123456789".contains($0) }
+                                        if filtered != newValue {
+                                            self.minProfit = filtered
+                                        }
+                                    }
+                                    .focused($minProfitFocused)
+                                    .textFieldStyle(.roundedBorder)
+                                    .keyboardType(.numberPad)
+                                    .background(.white)
+                                    .cornerRadius(8)
+                                
+                                Button("Enter") {
+                                    minProfitFocused = false
+                                    Criteria.minProfit = Int(self.minProfit) ?? 5000
+                                    showAlert.toggle()
+                                }
+                                .alert("Min Profit Set to \(Criteria.minProfit) stubs", isPresented: $showAlert) {
+                                    Button("Dismiss"){}
+                                }
+                                .buttonStyle(.bordered)
+                                .padding(.horizontal, mid)
+                                .foregroundColor(.white)                     .background(Colors.midGray)
+                                .cornerRadius(8)
+                                .padding(.leading, 10)
+                                .padding(.trailing, 30)
+                                
+                                Spacer()
+                            }
+                            
                         }.padding(.horizontal, leftEdge)
-                        Stepper("Starting marketplace page: \(startPage)", onIncrement: {
-                            startPage = min(lastPage, endPage-1,startPage+1)
-                        }, onDecrement: {
-                            startPage = max(1, startPage-1, endPage-maxPageSpan)
-                        })
-                            .padding(.horizontal, leftEdge)
-                            .padding(.vertical, 15)
-                            .hidden()
                         
                         Stepper("Ending marketplace page: \(endPage)", onIncrement: {
                             endPage = min(lastPage, startPage+maxPageSpan, endPage+1)
@@ -98,7 +123,7 @@ struct CriteriaController: View {
                         
                         Spacer()
                     }.padding(.top, 30)
-                        .navigationBarTitle(Text("Settings"), displayMode: .inline)
+                        .navigationBarTitle(Text("Settings"), displayMode: .large)
                 }
             )
         //}
@@ -114,8 +139,8 @@ struct CriteriaController: View {
                 .padding(.vertical, 10)
                 .frame(width: 200, height: 40)
                 .background(Colors.midGray)
-                .cornerRadius(20)
-                
+                .cornerRadius(8)
+            
             
         }
     }

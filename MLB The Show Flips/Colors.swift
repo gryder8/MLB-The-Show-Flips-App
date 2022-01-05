@@ -33,6 +33,14 @@ internal enum Colors {
         return Color(hexValue: 0x737373)
     }
     
+    static var glacier: Color {
+        return Color(hexValue: 0x6ac2d4)
+    }
+    
+    static var pastelGreen: Color {
+        return Color(hexValue: 0x7dbd76)
+    }
+    
     static var whiteSmoke: Color {
         return Color(hexValue: 0xF5F5F5)
     }

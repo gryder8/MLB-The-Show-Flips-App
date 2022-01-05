@@ -11,8 +11,8 @@ struct ListRow: View {
     
     var text = ""
     var selected = false
-    let enabledGradientColors:[Color] = [.green, Colors.whiteSmoke]
-    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.whiteSmoke]
+    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
+    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
     
     init(_ text: String, disabled: Bool) {
         self.text = text
@@ -32,13 +32,16 @@ struct ListRow: View {
 struct SeriesExclusion: View {
     
     init() {
-        UINavigationBar.appearance().backgroundColor = Colors.UIteal
+        UINavigationBar.appearance().backgroundColor = .clear
+        UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
+        UINavigationBar.appearance().barTintColor = .black
+        UITableView.appearance().backgroundColor = .clear
         //UINavigationBar.appearance().standardAppearance
     }
     
     private let cardSeries:[String] = ["2021 All Star", "2021 Postseason", "2nd Half", "All-Star", "Awards", "Finest", "Future Stars", "Home Run Derby", "Live", "Milestone", "Monthly Awards", "Postseason", "Prime", "Prospect", "Rookie", "Signature", "The 42", "Topps Now", "Veteran"]
     @State private var selection: Set<String> = Set(Criteria.excludedSeries.map{$0})
-//    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    //    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     //    var backBtn : some View { Button(action: {
     //        self.presentationMode.wrappedValue.dismiss()
@@ -62,13 +65,13 @@ struct SeriesExclusion: View {
                 VStack{
                     List(cardSeries, id: \.self, selection: $selection) { series in
                         ListRow(series, disabled: selection.contains(series))
-                        
+                            .listRowSeparatorTint(.black)
                     }
                     .listStyle(.insetGrouped)
                     .onDisappear(perform: {
                         Criteria.excludedSeries = Array(selection)
                     })
-                    .navigationTitle("Excluded Series")
+                    .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)
                     //.navigationBarBackButtonHidden(false)
                     .toolbar{
@@ -81,10 +84,10 @@ struct SeriesExclusion: View {
                         }
                     }
                     
-                    //}
                 }
                     .navigationBarTitle(Text("Exclude Card Series"), displayMode: .inline)
                     .foregroundColor(.black)
+                //.navigationBar
             )
     }
 }

@@ -75,14 +75,33 @@ struct MainListContentRow: View {
     var body: some View {
         
         VStack {
-            AsyncImage(url: playerItem.img) { image in
-                image.fixedSize(horizontal: true, vertical: true)
-                
-            } placeholder: {
-                ProgressView()
-                    .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                    .scaleEffect(1.5, anchor: .center)
+            AsyncImage(url: playerItem.img, transaction: Transaction(animation: .easeInOut)) { phase in
+                    switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                                    .scaleEffect(1.5, anchor: .center)
+                            case .success(let image):
+                                image
+                                    .fixedSize(horizontal: true, vertical: true)
+                            case .failure:
+                                Image(systemName: "person.crop.circle.badge.exclamationmark")
+                            .scaleEffect(3.5)
+                            .padding(.bottom, 10)
+                            .foregroundColor(.red)
+                            @unknown default:
+                                EmptyView()
+                        }
             }
+//            AsyncImage(url: playerItem.img) { image in
+//                image.fixedSize(horizontal: true, vertical: true)
+//
+//
+//            } placeholder: {
+//                ProgressView()
+//                    .progressViewStyle(DarkBlueShadowProgressViewStyle())
+//                    .scaleEffect(1.5, anchor: .center)
+//            }
             
             let text = calc.playerFlipDescription(playerListing).0
             let url: URL = URL(string: "\(urlBaseString + playerItem.uuid)")!
@@ -95,15 +114,24 @@ struct MainListContentRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 20, height: 20, alignment: .center)
-                
-            }
+            }.transition(.slide.animation(.easeInOut))
             Text(calc.playerFlipDescription(playerListing).1)
                 .foregroundColor(Colors.darkGray)
                 .font(.system(size: 16))
-        }
+        }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
     }
 }
 
+//struct CustomDivider: View {
+//    let color: Color = .black
+//    let width: CGFloat = 1.3
+//    var body: some View {
+//        Rectangle()
+//            .fill(color)
+//            .frame(height: width)
+//            .edgesIgnoringSafeArea(.horizontal)
+//    }
+//}
 
 
 struct ContentView: View {
@@ -143,14 +171,17 @@ struct ContentView: View {
     }
     
     
-    @ObservedObject var viewModel = ContentViewModel()
-    @GestureState var dragAmount = CGSize.zero
-    @State var hidesNavBar = false
+    //@ObservedObject var viewModel = ContentViewModel()
+    //@GestureState var dragAmount = CGSize.zero
+    //@State var hidesNavBar = false
     
     let urlBaseString = "https://mlb21.theshow.com/items/"
     let calc = Calculator()
     let criteria = Criteria()
-    @StateObject var dataSource = ContentDataSource()
+    @ObservedObject var dataSource = ContentDataSource()
+    
+    var loadedPage: Int = Criteria.startPage
+
     
     var body: some View {
         
@@ -159,15 +190,13 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
                     ScrollView {
-                        
-                        
                         LazyVStack {
-                            //VStack {
                             ForEach(dataSource.items) { playerListing in
                                 let playerItem = playerListing.item
                                 MainListContentRow(playerListing: playerListing, playerItem: playerItem)
                                     .onAppear {
                                         dataSource.loadMoreContentIfNeeded(currentItem: playerListing)
+                                        
                                     }
                                     .padding(.all, 30)
                             }
@@ -184,9 +213,9 @@ struct ContentView: View {
                 )
                 .navigationTitle("Best Flips")
                 .toolbar {
-                    //                ToolbarItem(placement: .navigationBarLeading) {
-                    //                    refreshButton
-                    //                }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        refreshButton
+                    }
                     ToolbarItem(placement: .principal) {
                         Text("Click a card name to open on the web")
                             .italic()
@@ -201,34 +230,17 @@ struct ContentView: View {
         }
     }
     
-    //    private var refreshButton: some View {
-    //        Button {
-    //            Task.init {
-    //                withAnimation(.easeIn) {
-    //                    viewModel.playerListings.removeAll()
-    //                }
-    //
-    //                var page = Criteria.startPage
-    //                var done = false
-    //
-    //                while (!done) {
-    //                    await viewModel.fetchData(pageNum: page)
-    //
-    //                    page+=1
-    //
-    //                    if (page > Criteria.endPage || viewModel.playerListings.count < Criteria.maxCardsAtOnce) {
-    //                        done = true
-    //                    }
-    //                }
-    //                viewModel.playerListings = calc.sortedPlayerListings(listings: &viewModel.playerListings, trim: true)
-    //            }
-    //
-    //        } label: {
-    //            Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
-    //                .scaleEffect(1.5)
-    //                .foregroundColor(.black)
-    //        }
-    //    }
+        private var refreshButton: some View {
+            Button {
+                dataSource.items.removeAll()
+                dataSource.currentPage = Criteria.startPage
+                dataSource.loadMoreContentIfNeeded(currentItem: nil)
+            } label: {
+                Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
+                    .scaleEffect(1.5)
+                    .foregroundColor(.black)
+            }
+        }
     
     private var settingsButton: some View {
         NavigationLink(destination: CriteriaController()) {

@@ -27,7 +27,7 @@ class Calculator {
             let range = Criteria.maxCardsAtOnce...listings.count-1
             listings.removeSubrange(range)
         }
-        return listings
+        return listings.reversed()
     }
     
     private func signFor(_ val: Int) -> String {
