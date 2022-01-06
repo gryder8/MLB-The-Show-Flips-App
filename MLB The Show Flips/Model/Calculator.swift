@@ -6,10 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 
 class Calculator {
-    //["Topps Now"]
-    //let criteria = Criteria()
+    private var criteria: Criteria
+    
+    init(criteriaInst: Criteria) { //not hierarchical
+        self.criteria = criteriaInst
+    }
     
     func flipProfit(_ player: PlayerListing) -> Int {
         let buyActual:Double = Double(player.best_buy_price + 1)
@@ -23,8 +27,8 @@ class Calculator {
             return flipProfit(lhs) < flipProfit(rhs)
         }
         
-        if (trim && listings.count > Criteria.maxCardsAtOnce) {
-            let range = Criteria.maxCardsAtOnce...listings.count-1
+        if (trim && listings.count > criteria.maxCardsAtOnce) {
+            let range = criteria.maxCardsAtOnce...listings.count-1
             listings.removeSubrange(range)
         }
         return listings.reversed()
@@ -42,7 +46,7 @@ class Calculator {
     
     func meetsFlippingCriteria(_ player: inout PlayerListing) -> Bool {
         let playerItem = player.item
-        if (player.best_buy_price > Criteria.budget || Criteria.excludedSeries.contains(playerItem.series)) {
+        if (player.best_buy_price > criteria.budget || criteria.excludedSeries.contains(playerItem.series)) {
             return false
         }
         

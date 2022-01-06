@@ -27,7 +27,7 @@ internal extension Color {
 
     static func adaptive(dark: UIColor, light: UIColor) -> UIColor {
         if #available(iOS 13.0, *) {
-            return UIColor { $0.userInterfaceStyle == .dark ? dark : light }
+            return UIColor {$0.userInterfaceStyle == .dark ? dark : light }
         } else {
             return light
         }
