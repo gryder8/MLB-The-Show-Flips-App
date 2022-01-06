@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-//FIX: Duplicate entries on entering new min profit in settings screen
+//TODO: Have list row update on user selection
+//TODO: Add color customization and local data storage
 
 class ContentViewModel: ObservableObject {
     
@@ -185,6 +186,7 @@ struct ContentView: View {
                         }
                     }.onAppear(perform: {
                         if (!Universals.firstLoad) {
+                            print("Exclusions: \(criteria.excludedSeries)")
                             dataSource.refilterItems(with: Universals.criteria)
                         } else {
                             Universals.firstLoad = false

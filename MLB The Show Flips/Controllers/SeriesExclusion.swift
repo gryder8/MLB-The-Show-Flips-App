@@ -7,26 +7,45 @@
 
 import SwiftUI
 
-struct ListRow: View {
-    
-    var text = ""
-    var selected = false
-    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
-    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
-    
-    init(_ text: String, disabled: Bool) {
-        self.text = text
-        self.selected = disabled
-    }
-    
-    var body: some View {
-        Text(self.text)
-            .listRowBackground(selected ?
-                               LinearGradient(colors: disabledGradientColors, startPoint: .leading, endPoint: .trailing)
-                               : LinearGradient(colors: enabledGradientColors, startPoint: .leading, endPoint: .trailing)
-            )
-    }
-}
+//struct ListRow: View {
+//
+//    var text = ""
+//    var selected = false
+//    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
+//    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
+//
+//    init(_ text: String, disabled: Bool) {
+//        self.text = text
+//        self.selected = disabled
+//    }
+//
+//    var body: some View {
+//        Text(self.text)
+//            .listRowBackground(selected ?
+//                               LinearGradient(colors: disabledGradientColors, startPoint: .leading, endPoint: .trailing)
+//                               : LinearGradient(colors: enabledGradientColors, startPoint: .leading, endPoint: .trailing)
+//            )
+//    }
+//}
+//
+//struct enabledGradient: View {
+//    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
+//    var body: some View {
+//        LinearGradient(colors: enabledGradientColors, startPoint: .leading, endPoint: .trailing)
+//    }
+//}
+//
+//struct disabledGradient: View {
+//    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
+//    var body: some View {
+//        LinearGradient(colors: disabledGradientColors, startPoint: .leading, endPoint: .trailing)
+//    }
+//}
+
+//let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
+let enabledGradient = LinearGradient(colors: [Colors.pastelGreen, Colors.glacier], startPoint: .leading, endPoint: .trailing)
+//let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
+let disabledGradient = LinearGradient(colors: [Colors.darkRed, Colors.glacier], startPoint: .leading, endPoint: .trailing)
 
 
 struct SeriesExclusion: View {
@@ -44,6 +63,7 @@ struct SeriesExclusion: View {
         //UINavigationBar.appearance().standardAppearance
         //self.MYcriteria = criteriaObj
         //selection = Set(MYcriteria.excludedSeries.map{$0})
+        //print(criteria.excludedSeries)
     }
     
     
@@ -57,7 +77,10 @@ struct SeriesExclusion: View {
             .overlay(
                 VStack{
                     List(cardSeries, id: \.self, selection: $selection) { series in
-                        ListRow(series, disabled: criteria.excludedSeries.contains(series))
+                        Text(series)
+                            .listRowBackground(
+                                selection.contains(series) ? disabledGradient :  enabledGradient
+                            )
                             .listRowSeparatorTint(.black)
                     }
                     .onAppear(perform: {
@@ -66,7 +89,7 @@ struct SeriesExclusion: View {
                     .listStyle(.insetGrouped)
                     .onDisappear(perform: {
                         criteria.excludedSeries = Array(selection)
-                        
+                        print(criteria.excludedSeries)
                     })
                     .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)
