@@ -8,21 +8,6 @@
 import SwiftUI
 import Combine
 
-extension Int {
-    var double: Double {
-        get { Double(self) }
-        set { self = Int(newValue) }
-    }
-}
-
-enum Field: Hashable {
-    case minProfit
-    case budget
-}
-
-
-
-
 struct CriteriaController: View {
     
     @ObservedObject var dataSource: ContentDataSource
