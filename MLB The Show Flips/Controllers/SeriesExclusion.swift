@@ -7,40 +7,6 @@
 
 import SwiftUI
 
-//struct ListRow: View {
-//
-//    var text = ""
-//    var selected = false
-//    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
-//    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
-//
-//    init(_ text: String, disabled: Bool) {
-//        self.text = text
-//        self.selected = disabled
-//    }
-//
-//    var body: some View {
-//        Text(self.text)
-//            .listRowBackground(selected ?
-//                               LinearGradient(colors: disabledGradientColors, startPoint: .leading, endPoint: .trailing)
-//                               : LinearGradient(colors: enabledGradientColors, startPoint: .leading, endPoint: .trailing)
-//            )
-//    }
-//}
-//
-//struct enabledGradient: View {
-//    let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
-//    var body: some View {
-//        LinearGradient(colors: enabledGradientColors, startPoint: .leading, endPoint: .trailing)
-//    }
-//}
-//
-//struct disabledGradient: View {
-//    let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
-//    var body: some View {
-//        LinearGradient(colors: disabledGradientColors, startPoint: .leading, endPoint: .trailing)
-//    }
-//}
 
 //let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
 let enabledGradient = LinearGradient(colors: [Colors.pastelGreen, Colors.glacier], startPoint: .leading, endPoint: .trailing)
@@ -50,19 +16,20 @@ let disabledGradient = LinearGradient(colors: [Colors.darkRed, Colors.glacier], 
 
 struct SeriesExclusion: View {
     
+    @Binding var gradColors: [Color]
     @State private var selection: Set<String> = Set<String>()
     @EnvironmentObject var criteria:Criteria
     
-    //private var MYcriteria: Criteria
     
-    init(criteriaObj: Criteria) {
+    init(gradColors: [Color]) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
         UITableView.appearance().backgroundColor = .clear
+        
+        _gradColors = Binding.constant(gradColors)
+        
         //UINavigationBar.appearance().standardAppearance
-        //self.MYcriteria = criteriaObj
-        //selection = Set(MYcriteria.excludedSeries.map{$0})
         //print(criteria.excludedSeries)
     }
     
@@ -72,7 +39,7 @@ struct SeriesExclusion: View {
     
     
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: Colors.backgroundGradientColors), startPoint: .top, endPoint: .bottom)
+        LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 VStack{
@@ -111,7 +78,8 @@ struct SeriesExclusion: View {
 
 
 struct SeriesExclusion_Previews: PreviewProvider {
+    static var testColors: [Color] = [.orange, .black]
     static var previews: some View {
-        SeriesExclusion(criteriaObj: Criteria())
+        SeriesExclusion(gradColors: testColors)
     }
 }

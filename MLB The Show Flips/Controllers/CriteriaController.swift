@@ -16,8 +16,8 @@ extension Int {
 }
 
 enum Field: Hashable {
-        case minProfit
-        case budget
+    case minProfit
+    case budget
 }
 
 
@@ -25,12 +25,10 @@ enum Field: Hashable {
 
 struct CriteriaController: View {
     
-//    var criteria:Criteria
-    var dataSource: ContentDataSource
-//
-    init(contentDataSource: ContentDataSource) {
-        self.dataSource = contentDataSource
-    }
+    @ObservedObject var dataSource: ContentDataSource
+    
+    
+    @Binding var gradientColors: [Color]
     
     @EnvironmentObject var criteria:Criteria
     
@@ -42,6 +40,7 @@ struct CriteriaController: View {
     
     @State var budget = String(Criteria.initBudget)
     
+    
     let startPage = Criteria.startPage
     
     @State var endPage = 3 {
@@ -49,7 +48,7 @@ struct CriteriaController: View {
             criteria.endPage = self.endPage
         }
     }
-
+    
     
     @State var excludedSeries:[String] = [] {
         didSet  {
@@ -69,11 +68,8 @@ struct CriteriaController: View {
     
     
     var body: some View {
-        //NavigationView {
         
-        
-        
-        LinearGradient(gradient: Gradient(colors: Colors.backgroundGradientColors), startPoint: .top, endPoint: .bottom)
+        LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 GeometryReader { geometry in
@@ -117,10 +113,11 @@ struct CriteriaController: View {
                                 }
                                 .buttonStyle(.bordered)
                                 .padding(.horizontal, mid)
-                                .foregroundColor(.white)                     .background(Colors.midGray)
+                                .foregroundColor(.white)  .background(Colors.midGray)
                                 .cornerRadius(8)
                                 .padding(.leading, 10)
                                 .padding(.trailing, 30)
+                                
                                 
                                 Spacer()
                             }
@@ -130,8 +127,8 @@ struct CriteriaController: View {
                                     .padding(.trailing, 10.0)
                                     .lineLimit(1)
                                     .frame(width: 146)
-                                    //.padding(.trailing, 5)
-                                    
+                                //.padding(.trailing, 5)
+                                
                                 TextField("Budget", text: $budget)
                                     .onReceive(Just(budget)) { newValue in
                                         let filtered = newValue.filter { "0123456789".contains($0) }
@@ -192,11 +189,10 @@ struct CriteriaController: View {
                         .navigationBarTitle(Text("Settings"), displayMode: .large)
                 }
             )
-        //}
     }
     
     private var excludeSeriesButton: some View {
-        NavigationLink(destination: SeriesExclusion(criteriaObj: criteria).modifier(Universals())) {
+        NavigationLink(destination: SeriesExclusion(gradColors: gradientColors).modifier(Universals())) {
             HStack {
                 Text("Exclude Card Series")
                 Image(systemName: "arrow.right")
@@ -210,10 +206,14 @@ struct CriteriaController: View {
             
         }
     }
+    
 }
 
 struct CriteriaController_Previews: PreviewProvider {
+    @ObservedObject static var ds = ContentDataSource(criteriaInst: Criteria())
+    @State static var testColors: [Color] = [.orange, .black]
+    
     static var previews: some View {
-        CriteriaController(contentDataSource: ContentDataSource(criteriaInst: Criteria()))
+        CriteriaController(dataSource: ds, gradientColors: $testColors)
     }
 }

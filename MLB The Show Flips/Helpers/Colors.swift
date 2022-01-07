@@ -20,7 +20,7 @@ internal enum Colors {
     static var darkYellow: Color {
         return Color(hexValue: 0xFFD700)
     }
-
+    
     static var darkerGray: Color {
         return Color(hexValue: 0x505456)
     }
@@ -51,7 +51,7 @@ internal enum Colors {
     
     
     //MARK: - Color Arrays
-    static var backgroundGradientColors: [Color] {
+    static var backgroundGradientColors: [Color]  {
         return [.teal, .blue]
     }
 }

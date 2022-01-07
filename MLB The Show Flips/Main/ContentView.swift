@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-//TODO: Have list row update on user selection
-//TODO: Add color customization and local data storage
+//TODO: Add local data storage and test filters a little more
 
 class ContentViewModel: ObservableObject {
     
@@ -70,11 +69,7 @@ struct MainListContentRow: View {
                 Link("\(text)", destination: url)
                     .foregroundColor(.black)
                     .font(.system(size: 22))
-                
-                Image("stubs")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 20, height: 20, alignment: .center)
+                StubSymbol()
             }.transition(.slide.animation(.easeInOut))
             Text(calc.playerFlipDescription(playerListing).1)
                 .foregroundColor(Colors.darkGray)
@@ -138,11 +133,9 @@ struct ContentView: View {
         // This property is not present on the UINavigationBarAppearance
         // object for some reason and you have to leave it til the end
         UINavigationBar.appearance().tintColor = .black
-        dataSource = ContentDataSource(criteriaInst: Universals.criteria)
     }
     
     
-    //@ObservedObject var viewModel = ContentViewModel()
     //@GestureState var dragAmount = CGSize.zero
     //@State var hidesNavBar = false
     
@@ -150,20 +143,25 @@ struct ContentView: View {
     
     
     @StateObject var criteria = Universals.criteria
+    @State var gradientColors = Colors.backgroundGradientColors
     
-    @ObservedObject var dataSource:ContentDataSource = ContentDataSource(criteriaInst: Criteria()) //initialization replaced
+    
+    @ObservedObject var dataSource:ContentDataSource = ContentDataSource(criteriaInst: Universals.criteria) //initialization replaced
     
     var loadedPage: Int = Criteria.startPage
     
     var body: some View {
         NavigationView {
-            LinearGradient(gradient: Gradient(colors: [.teal, .blue]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
                     ScrollView {
                         VStack {
-                            Text("Budget Per Card: \(criteria.budget)")
-                                .padding(.vertical, 10)
+                            HStack(spacing: 3) {
+                                Text("Budget Per Card: \(criteria.budget)")
+                                    .padding(.vertical, 10)
+                                StubSymbol()
+                            }
                             LazyVStack {
                                 ForEach(dataSource.items) { playerListing in
                                     let playerItem = playerListing.item
@@ -204,10 +202,15 @@ struct ContentView: View {
                             .italic()
                             .font(.system(size: 14))
                             .lineLimit(1)
+                            .frame(width: 260)
                         
                     }
                     ToolbarItem(placement: .navigationBarLeading) {
-                        settingsButton
+                        HStack {
+                            settingsButton
+                            appearanceButton
+                                .padding(.trailing, -10)
+                        }
                     }
                 }
         }
@@ -227,14 +230,29 @@ struct ContentView: View {
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: CriteriaController(contentDataSource: dataSource).modifier(Universals())) {
+        NavigationLink(destination: CriteriaController(dataSource: dataSource, gradientColors: $gradientColors).modifier(Universals())) {
             Image(systemName: "gearshape")
                 .foregroundColor(.black)
                 .scaleEffect(1.5)
         }
     }
     
-    
+    private var appearanceButton: some View {
+        NavigationLink(destination: AppearanceController(gradientColors: $gradientColors).modifier(Universals())) {
+            Image(systemName: "paintbrush")
+                .foregroundColor(.black)
+                .scaleEffect(1.5)
+        }
+    }
+}
+
+struct StubSymbol: View {
+    var body: some View {
+        Image("stubs")
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 20, height: 20, alignment: .center)
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
