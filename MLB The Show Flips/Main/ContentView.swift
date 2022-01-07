@@ -198,7 +198,7 @@ struct ContentView: View {
                         refreshButton
                     }
                     ToolbarItem(placement: .principal) {
-                        Text("Click a card name to open it on the web")
+                        Text("Tap a card name to open it on the web")
                             .italic()
                             .font(.system(size: 11))
                             .lineLimit(1)
