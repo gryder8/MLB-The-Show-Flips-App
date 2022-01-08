@@ -16,36 +16,38 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     }
     
     
-    @Published var name: String //constructor
-    @Published var uuid: String //constructor
+    var name: String //constructor
+    var uuid: String //constructor
     @Published var best_buy_price: Int //constructor
     @Published var best_sell_price: Int //constructor
-    @Published var ovr: Int //constructor
-    @Published var year: Int //constructor
-    @Published var shortPos: String //constructor
-    @Published var team: String //constructor
-    @Published var series: String //constructor
+    var ovr: Int //constructor
+    var year: Int //constructor
+    var shortPos: String //constructor
+    var team: String //constructor
+    var series: String //constructor
     @Published var price_history: [HistoricalPriceValue]
     @Published var completed_orders: [CompletedOrder]
-    @Published var image: Image
-    @Published var imgURL: URL //constructor
+    var image: Image
+    var imgURL: URL //constructor
+    var page: Int
     
     let itemURLBaseString:String = "https://mlb21.theshow.com/apis/listing.json?uuid="
     
-    init(name: String, uuid: String, bestBuy: Int, bestSell: Int, ovr:Int, year: Int, shortPos: String, team: String, series: String, imgURL: URL) {
-        _name = Published.init(initialValue: name)
-        _uuid = Published.init(initialValue: uuid)
+    init(name: String, uuid: String, bestBuy: Int, bestSell: Int, ovr:Int, year: Int, shortPos: String, team: String, series: String, imgURL: URL, fromPage: Int) {
+        self.name = name
+        self.uuid = uuid
         _best_buy_price = Published.init(initialValue: bestBuy)
         _best_sell_price = Published.init(initialValue: bestSell)
-        _ovr = Published.init(initialValue: ovr)
-        _year = Published.init(initialValue: year)
-        _shortPos = Published.init(initialValue: shortPos)
-        _team = Published.init(initialValue: team)
-        _series = Published.init(initialValue: series)
+        self.ovr = ovr
+        self.year = year
+        self.shortPos = shortPos
+        self.team = team
+        self.series = series
         _price_history = Published.init(initialValue: [])
         _completed_orders = Published.init(initialValue: [])
-        _image = Published.init(initialValue: Image(systemName: "photo"))
-        _imgURL = Published.init(initialValue: imgURL)
+        self.image = Image(systemName: "photo")
+        self.imgURL = imgURL
+        self.page = fromPage
         
     }
     

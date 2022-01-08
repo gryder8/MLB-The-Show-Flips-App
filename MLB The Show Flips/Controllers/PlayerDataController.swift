@@ -13,7 +13,7 @@ import Combine
 //  -for the criteria, pass it down as an observed object and call a method to reset the data by setting the cards for display as a sub-dict of AllItems
 class PlayerDataController:ObservableObject {
     
-    private var allItems: [String: (model: PlayerDataModel, pageNum: Int)] = [:] //init to empty, stores ALL data
+    private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
     //private var pagedAllItems: [Int: PlayerDataModel] = [:] //to get all items on a page, flatten to array using compact map
     @Published private var itemsForDisplay: [String: PlayerDataModel] = [:]
     
@@ -37,6 +37,13 @@ class PlayerDataController:ObservableObject {
         currentSequentialPage = Criteria.startPage
     }
     
+    func refilterDataForNewCriteria() {
+        itemsForDisplay = allItems.filter { item in
+            item.value.best_buy_price <= Criteria.shared.budget &&
+            calc.flipProfit(item.value) >= Criteria.shared.minProfit
+        }
+    }
+    
     
     func cachePage(_ pageNum: Int) async {
         let pageURL = URL(string: "\(pageBaseURL)\(pageNum)")!
@@ -58,14 +65,14 @@ class PlayerDataController:ObservableObject {
             
             for listing in page.listings {
                 let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img)
+                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
                 await playerDataModel.cacheImage()
                 
                 if (criteria.meetsFlippingCriteria(&playerDataModel)) {
                     itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
                 }
                 
-                allItems.updateValue((playerDataModel, page.page), forKey: itm.uuid)
+                allItems.updateValue(playerDataModel, forKey: itm.uuid)
                 //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
             }
             
@@ -104,14 +111,14 @@ class PlayerDataController:ObservableObject {
             
             for listing in page.listings {
                 let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img)
+                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
                 await playerDataModel.cacheImage()
                 
                 if (criteria.meetsFlippingCriteria(&playerDataModel)) {
                     itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
                 }
                 
-                allItems.updateValue((playerDataModel, page.page), forKey: itm.uuid)
+                allItems.updateValue(playerDataModel, forKey: itm.uuid)
                 
                 //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
             }
@@ -152,14 +159,14 @@ class PlayerDataController:ObservableObject {
             
             for listing in page.listings {
                 let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img)
+                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
                 await playerDataModel.cacheImage() //cache the image of the model when we create it
                 
                 if (criteria.meetsFlippingCriteria(&playerDataModel)) {
                     itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
                 }
                 
-                allItems.updateValue((playerDataModel, page.page), forKey: itm.uuid)
+                allItems.updateValue(playerDataModel, forKey: itm.uuid)
                 //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
             }
             
@@ -188,7 +195,7 @@ class PlayerDataController:ObservableObject {
     
     func uncacheForPage(_ invalidationPageNum: Int) {
         allItems = allItems.filter { pair in //removes all values in the dict that don't satisfy this predicate
-            pair.value.pageNum != invalidationPageNum
+            pair.value.page != invalidationPageNum
         }
     }
     
@@ -197,7 +204,7 @@ class PlayerDataController:ObservableObject {
     }
     
     func getValidPlayersForPage(_ pageNum: Int) -> [PlayerDataModel] {
-        let allModels:[PlayerDataModel] = allItems.values.filter {tuple in tuple.pageNum == pageNum}.map {validTuples in validTuples.model } //create a collection from the dict values where all the items are tuples where the int matches the page num, then map the models from the tuples into an array of data model
+        let allModels:[PlayerDataModel] = allItems.values.filter {value in value.page == pageNum} //create a collection from the dict values where all the items are tuples where the int matches the page num, then map the models from the tuples into an array of data model
         let validModels = allModels.filter { player in
             var mutablePlayer = player
             return criteria.meetsFlippingCriteria(&mutablePlayer)
@@ -252,24 +259,24 @@ class PlayerDataController:ObservableObject {
     ///Returns the player data model for the specified UUID.
     ///If nothing is found, returns nil.
     func getPlayerDataModelForUUID(uuid: String) -> PlayerDataModel {
-        return allItems[uuid]!.model
+        return allItems[uuid]!
     }
     
     private func cacheMarketDataForModelAtUUID(_ uuid: String) async {
-        if let retrievedModel = allItems[uuid]?.model {
+        if let retrievedModel = allItems[uuid] {
             await retrievedModel.cacheMarketTransactionData()
         }
     }
     
     private func cacheImageForModelAtUUID(_ uuid: String) async {
-        if let retrievedModel = allItems[uuid]?.model {
+        if let retrievedModel = allItems[uuid] {
             await retrievedModel.cacheImage()
         }
         
     }
     
     private func cachePlayerListingForModelAtUUID(_ uuid: String) async {
-        if let retrievedModel = allItems[uuid]?.model {
+        if let retrievedModel = allItems[uuid] {
             await retrievedModel.cacheMarketTransactionData()
         }
         
