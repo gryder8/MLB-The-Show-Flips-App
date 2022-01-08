@@ -25,6 +25,7 @@ struct CriteriaController: View {
     
     @State var budget = String(Criteria.initBudget)
     
+    @ObservedObject var dataController: PlayerDataController
     
     let startPage = Criteria.startPage
     
@@ -83,7 +84,7 @@ struct CriteriaController: View {
                                     
                                     if let profitValueAsInt:Int = Int(self.minProfit) {
                                         Criteria.shared.minProfit = profitValueAsInt
-                                        //dataSource.refilterItems(with: criteria)
+                                        dataController.refilterDataForNewCriteria()
                                         showMinProfitAlert.toggle()
                                     } else {
                                         showErrorAlert.toggle()
@@ -134,7 +135,7 @@ struct CriteriaController: View {
                                     
                                     if let budgetValueAsInt:Int = Int(self.budget) {
                                         Criteria.shared.budget = budgetValueAsInt
-                                        //dataSource.refilterItems(with: criteria)
+                                        dataController.refilterDataForNewCriteria()
                                         showBudgetAlert.toggle()
                                     } else {
                                         showErrorAlert.toggle()
@@ -160,9 +161,9 @@ struct CriteriaController: View {
                         }.padding(.horizontal, leftEdge)
                         
                         Stepper("Ending marketplace page: \(endPage)", onIncrement: {
-                            endPage = min(lastPage, startPage+maxPageSpan, endPage+1)
+                            endPage = min(Criteria.shared.endPage, endPage+1)
                         }, onDecrement: {
-                            endPage = max(startPage+1, endPage-1)
+                            endPage = max(Criteria.startPage, endPage-1)
                         }).padding(.horizontal, leftEdge)
                         
                         excludeSeriesButton
@@ -196,9 +197,11 @@ struct CriteriaController: View {
 
 struct CriteriaController_Previews: PreviewProvider {
     static var ds = PlayerDataController()
+    static var testIMGURL: URL = URL(string: "https://mlb21.theshow.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczVzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a63051376496444a959d408eeb385c660d229548/e53423a698b7afe59590c90a70cd448d.jpg")!
+    //@ObservedObject static var model = PlayerDataModel(name: "Test", uuid: "224466", bestBuy: 93673, bestSell: 125678, ovr: 99, year: 2021, shortPos: "TP", team: "Test", series: "Test", imgURL: testIMGURL, fromPage: 1)
     @State static var testColors: [Color] = [.orange, .black]
     
     static var previews: some View {
-        CriteriaController(gradientColors: $testColors)
+        CriteriaController(gradientColors: $testColors, dataController: ds)
     }
 }

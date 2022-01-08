@@ -28,7 +28,7 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
 }
 
 //let playerDataController = PlayerDataController()
-let NIL_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!)
+let NIL_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
 
 struct MainListContentRow: View {
@@ -247,7 +247,7 @@ struct ContentView: View {
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: CriteriaController(gradientColors: $gradientColors)) {
+        NavigationLink(destination: CriteriaController(gradientColors: $gradientColors, dataController: playerDataController)) {
             Image(systemName: "gearshape")
                 .foregroundColor(.black)
                 .scaleEffect(1.5)

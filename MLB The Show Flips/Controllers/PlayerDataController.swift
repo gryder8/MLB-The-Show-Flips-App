@@ -46,6 +46,10 @@ class PlayerDataController:ObservableObject {
     
     
     func cachePage(_ pageNum: Int) async {
+        if (pageNum > Criteria.shared.endPage || pageNum > totalPages) {
+            return
+        }
+        
         let pageURL = URL(string: "\(pageBaseURL)\(pageNum)")!
         
         do {
@@ -86,7 +90,7 @@ class PlayerDataController:ObservableObject {
     }
     
     func cacheSequentialPage() async {
-        if (currentSequentialPage >= totalPages) {
+        if (currentSequentialPage > totalPages || currentSequentialPage > Criteria.shared.endPage) {
             return
         }
         
@@ -137,11 +141,12 @@ class PlayerDataController:ObservableObject {
     
     
     func cacheNextPage() async {
-        if (lastPageLoaded == totalPages) {
+        if (lastPageLoaded == totalPages || lastPageLoaded >= Criteria.shared.endPage) {
             return
         }
         
         let pageNum = lastPageLoaded+1
+        
         let pageURL = URL(string: "\(pageBaseURL)\(pageNum)")!
         
         do {
