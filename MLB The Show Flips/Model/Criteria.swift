@@ -7,13 +7,39 @@
 
 import Foundation
 
-class Criteria: ObservableObject {
-    @Published var minProfit = 5000
+class Criteria {
+    var minProfit = 5000
     static let initProfit:Int = 5000
-    @Published var budget = 45000
+    var budget = 45000
     static let initBudget = 45000
     static let startPage = 1
-    @Published var endPage = 5
+    var endPage = 5
     let maxCardsAtOnce = 30 //should be able to load everything in the page
-    @Published var excludedSeries:[String] = []
+    var excludedSeries:[String] = []
+    
+    static var shared = Criteria() //singleton
+    
+    func meetsFlippingCriteria(_ playerModel: inout PlayerDataModel) -> Bool {
+        //let playerItem = player.item
+        if (playerModel.best_buy_price > self.budget || self.excludedSeries.contains(playerModel.series)) {
+            return false
+        }
+        
+        //assign a value for players with no buy orders and thus no buy price
+        if (playerModel.best_buy_price == 0 && playerModel.ovr >= 85) {
+            playerModel.best_buy_price = 5000
+        } else if (playerModel.best_buy_price == 0 && playerModel.ovr < 85 && playerModel.ovr >= 80) {
+            playerModel.best_buy_price = 1000
+        } else if (playerModel.best_buy_price == 0 && playerModel.ovr < 80 && playerModel.ovr >= 75) {
+            playerModel.best_buy_price = 1000
+        }
+        
+        if (playerModel.ovr >= 85 && playerModel.best_buy_price < 5000) { //check for cards listed under
+            return false
+        } else if (playerModel.ovr >= 80 && playerModel.ovr < 85 && playerModel.best_buy_price < 1000) {
+            return false
+        }
+        
+        return true
+    }
 }

@@ -27,51 +27,62 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     }
 }
 
+//let playerDataController = PlayerDataController()
+let NIL_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!)
+
 
 struct MainListContentRow: View {
-    var criteria: Criteria
-    var playerListing:PlayerListing
-    var playerItem:PlayerItem
+    
+    var playerModel: PlayerDataModel
+//    var playerListing: PlayerListing
+//    var playerItem:PlayerItem
     
     let urlBaseString = "https://mlb21.theshow.com/items/"
     
-    init (playerListing: PlayerListing, playerItem: PlayerItem, criteriaObj: Criteria) {
-        self.playerListing = playerListing
-        self.playerItem = playerItem
-        self.criteria = criteriaObj
+    init (model: PlayerDataModel) {
+        self.playerModel = model
     }
     
     var body: some View {
-        let calc = Calculator(criteriaInst: criteria)
+        let calc = Calculator()
         VStack {
-            AsyncImage(url: playerItem.img, transaction: Transaction(animation: .easeInOut)) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                        .scaleEffect(1.5, anchor: .center)
-                case .success(let image):
-                    image
-                        .fixedSize(horizontal: true, vertical: true)
-                case .failure:
-                    Image(systemName: "person.crop.circle.badge.exclamationmark")
-                        .scaleEffect(3.5)
-                        .padding(.bottom, 10)
-                        .foregroundColor(.red)
-                @unknown default:
-                    EmptyView()
-                }
-            }
+//            AsyncImage(url: playerModel.imgURL, transaction: Transaction(animation: .easeInOut)) { phase in
+//                switch phase {
+//                case .empty:
+//                    ProgressView()
+//                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
+//                        .scaleEffect(1.5, anchor: .center)
+//                case .success(let image):
+//                    image
+//                        .fixedSize(horizontal: true, vertical: true)
+//                case .failure:
+//                    Image(systemName: "person.crop.circle.badge.exclamationmark")
+//                        .scaleEffect(3.5)
+//                        .padding(.bottom, 10)
+//                        .foregroundColor(.red)
+//                @unknown default:
+//                    EmptyView()
+//                }
+//            }
             
-            let text = calc.playerFlipDescription(playerListing).0
-            let url: URL = URL(string: "\(urlBaseString + playerItem.uuid)")!
+            playerModel.image
+                .onAppear(perform: {
+                    if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
+                        Task.init {
+                            await playerModel.cacheImage()
+                        }
+                    }
+                })
+            
+            let text = calc.playerFlipDescription(playerModel).title
+            let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
                 Link("\(text)", destination: url)
                     .foregroundColor(.black)
                     .font(.system(size: 22))
                 StubSymbol()
             }.transition(.slide.animation(.easeInOut))
-            Text(calc.playerFlipDescription(playerListing).1)
+            Text(calc.playerFlipDescription(playerModel).desc)
                 .foregroundColor(Colors.darkGray)
                 .font(.system(size: 16))
         }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
@@ -89,18 +100,20 @@ struct MainListContentRow: View {
 //    }
 //}
 
-struct Universals: ViewModifier {
-    static var criteria = Criteria()
-    static var firstLoad = true
-    
-    func body(content: Content) -> some View {
-        content
-            .environmentObject(Self.criteria)
-    }
-}
+//struct Universals: ViewModifier {
+//    static var criteria = Criteria()
+//    static var firstLoad = true
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .environmentObject(Self.criteria)
+//    }
+//}
 
 
 struct ContentView: View {
+    
+    
     
     init() {
         // this is not the same as manipulating the proxy directly
@@ -111,6 +124,7 @@ struct ContentView: View {
         let scrollingAppearance = standardAppearance
         scrollingAppearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.clear
+            
         ]
         
         
@@ -142,11 +156,11 @@ struct ContentView: View {
     let urlBaseString = "https://mlb21.theshow.com/items/"
     
     
-    @StateObject var criteria = Universals.criteria
+    //@StateObject var criteria = Universals.criteria
     @State var gradientColors = Colors.backgroundGradientColors
     
     
-    @ObservedObject var dataSource:ContentDataSource = ContentDataSource(criteriaInst: Universals.criteria) //initialization replaced
+    @StateObject var playerDataController: PlayerDataController = PlayerDataController() //initialization replaced
     
     var loadedPage: Int = Criteria.startPage
     
@@ -158,23 +172,23 @@ struct ContentView: View {
                     ScrollView {
                         VStack {
                             HStack(spacing: 3) {
-                                Text("Budget Per Card: \(criteria.budget)")
+                                Text("Budget Per Card: \(Criteria.shared.budget)")
                                     .padding(.vertical, 10)
                                 StubSymbol()
                             }
                             LazyVStack {
-                                ForEach(dataSource.items) { playerListing in
-                                    let playerItem = playerListing.item
-                                    MainListContentRow(playerListing: playerListing, playerItem: playerItem, criteriaObj: criteria)
+                                ForEach(playerDataController.sortedModels()) { playerModel in
+                                    //let playerItem = playerModel.item
+                                    MainListContentRow(model: playerModel)
                                         .onAppear {
-                                            dataSource.setCriteria(new: self.criteria)
-                                            dataSource.loadMoreContentIfNeeded(currentItem: playerListing)
+                                            //dataSource.setCriteria(new: self.criteria)
+                                            playerDataController.loadMoreContentIfNeeded(model: playerModel)
                                             
                                         }
                                         .padding(.all, 30)
                                 }
                                 
-                                if dataSource.isLoadingPage {
+                                if playerDataController.isLoading {
                                     ProgressView()
                                         .progressViewStyle(DarkBlueShadowProgressViewStyle())
                                         .scaleEffect(1.5, anchor: .center)
@@ -182,23 +196,27 @@ struct ContentView: View {
                                 
                             }
                         }
-                    }.onAppear(perform: {
-                        if (!Universals.firstLoad) {
-                            print("Exclusions: \(criteria.excludedSeries)")
-                            dataSource.refilterItems(with: Universals.criteria)
-                        } else {
-                            Universals.firstLoad = false
-                        }
-                        
-                    })
+                    }
+//                        .onAppear(perform: {
+//                        if (!Universals.firstLoad) {
+//                            print("Exclusions: \(criteria.excludedSeries)")
+//                            dataSource.refilterItems(with: Universals.criteria)
+//                        } else {
+//                            Universals.firstLoad = false
+//                        }
+//
+//                    })
                 )
                 .navigationTitle("Best Flips")
+                .task {
+                    await playerDataController.cacheSequentialPage()
+                }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         refreshButton
                     }
                     ToolbarItem(placement: .principal) {
-                        Text("Tap a card name to open it on the web")
+                        Text("Tap a card name for more info")
                             .italic()
                             .font(.system(size: 11))
                             .lineLimit(1)
@@ -214,14 +232,13 @@ struct ContentView: View {
                     }
                 }
         }
-        .environmentObject(criteria)
+        //.environmentObject(criteria)
     }
     
     private var refreshButton: some View {
         Button {
-            dataSource.items.removeAll()
-            dataSource.currentPage = Criteria.startPage
-            dataSource.loadMoreContentIfNeeded(currentItem: nil)
+            playerDataController.reset()
+            playerDataController.loadMoreContentIfNeeded(model: NIL_MODEL)
         } label: {
             Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
                 .scaleEffect(1.5)
@@ -230,7 +247,7 @@ struct ContentView: View {
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: CriteriaController(dataSource: dataSource, gradientColors: $gradientColors).modifier(Universals())) {
+        NavigationLink(destination: CriteriaController(gradientColors: $gradientColors)) {
             Image(systemName: "gearshape")
                 .foregroundColor(.black)
                 .scaleEffect(1.5)
@@ -238,7 +255,7 @@ struct ContentView: View {
     }
     
     private var appearanceButton: some View {
-        NavigationLink(destination: AppearanceController(gradientColors: $gradientColors).modifier(Universals())) {
+        NavigationLink(destination: AppearanceController(gradientColors: $gradientColors)) {
             Image(systemName: "paintbrush")
                 .foregroundColor(.black)
                 .scaleEffect(1.5)

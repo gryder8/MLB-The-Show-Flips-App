@@ -18,7 +18,7 @@ struct SeriesExclusion: View {
     
     @Binding var gradColors: [Color]
     @State private var selection: Set<String> = Set<String>()
-    @EnvironmentObject var criteria:Criteria
+    //@EnvironmentObject var criteria:Criteria
     
     
     init(gradColors: [Color]) {
@@ -51,12 +51,12 @@ struct SeriesExclusion: View {
                             .listRowSeparatorTint(.black)
                     }
                     .onAppear(perform: {
-                        selection = Set(criteria.excludedSeries.map{$0})
+                        selection = Set(Criteria.shared.excludedSeries.map{$0})
                     })
                     .listStyle(.insetGrouped)
                     .onDisappear(perform: {
-                        criteria.excludedSeries = Array(selection)
-                        print(criteria.excludedSeries)
+                        Criteria.shared.excludedSeries = Array(selection)
+                        print(Criteria.shared.excludedSeries)
                     })
                     .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)

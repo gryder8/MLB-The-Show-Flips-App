@@ -10,12 +10,12 @@ import Combine
 
 struct CriteriaController: View {
     
-    @ObservedObject var dataSource: ContentDataSource
+    //@ObservedObject var dataSource: ContentDataSource
     
     
     @Binding var gradientColors: [Color]
     
-    @EnvironmentObject var criteria:Criteria
+    //@EnvironmentObject var criteria:Criteria
     
     @State var minProfit = String(Criteria.initProfit)
     
@@ -30,14 +30,14 @@ struct CriteriaController: View {
     
     @State var endPage = 3 {
         didSet  {
-            criteria.endPage = self.endPage
+            Criteria.shared.endPage = self.endPage
         }
     }
     
     
     @State var excludedSeries:[String] = [] {
         didSet  {
-            criteria.excludedSeries = self.excludedSeries
+            Criteria.shared.excludedSeries = self.excludedSeries
         }
     }
     
@@ -82,15 +82,15 @@ struct CriteriaController: View {
                                     
                                     
                                     if let profitValueAsInt:Int = Int(self.minProfit) {
-                                        criteria.minProfit = profitValueAsInt
-                                        dataSource.refilterItems(with: criteria)
+                                        Criteria.shared.minProfit = profitValueAsInt
+                                        //dataSource.refilterItems(with: criteria)
                                         showMinProfitAlert.toggle()
                                     } else {
                                         showErrorAlert.toggle()
                                     }
                                     
                                 }
-                                .alert("Min Profit set to \(criteria.minProfit) stubs", isPresented: $showMinProfitAlert) {
+                                .alert("Min Profit set to \(Criteria.shared.minProfit) stubs", isPresented: $showMinProfitAlert) {
                                     Button("Dismiss"){}
                                 }
                                 .alert("Enter a valid number!", isPresented: $showErrorAlert) {
@@ -133,15 +133,15 @@ struct CriteriaController: View {
                                     
                                     
                                     if let budgetValueAsInt:Int = Int(self.budget) {
-                                        criteria.budget = budgetValueAsInt
-                                        dataSource.refilterItems(with: criteria)
+                                        Criteria.shared.budget = budgetValueAsInt
+                                        //dataSource.refilterItems(with: criteria)
                                         showBudgetAlert.toggle()
                                     } else {
                                         showErrorAlert.toggle()
                                     }
                                     
                                 }
-                                .alert("Budget set to \(criteria.budget) stubs", isPresented: $showBudgetAlert) {
+                                .alert("Budget set to \(Criteria.shared.budget) stubs", isPresented: $showBudgetAlert) {
                                     Button("Dismiss"){}
                                 }
                                 .alert("Enter a valid number!", isPresented: $showErrorAlert) {
@@ -177,7 +177,7 @@ struct CriteriaController: View {
     }
     
     private var excludeSeriesButton: some View {
-        NavigationLink(destination: SeriesExclusion(gradColors: gradientColors).modifier(Universals())) {
+        NavigationLink(destination: SeriesExclusion(gradColors: gradientColors)) {
             HStack {
                 Text("Exclude Card Series")
                 Image(systemName: "arrow.right")
@@ -195,10 +195,10 @@ struct CriteriaController: View {
 }
 
 struct CriteriaController_Previews: PreviewProvider {
-    @ObservedObject static var ds = ContentDataSource(criteriaInst: Criteria())
+    static var ds = PlayerDataController()
     @State static var testColors: [Color] = [.orange, .black]
     
     static var previews: some View {
-        CriteriaController(dataSource: ds, gradientColors: $testColors)
+        CriteriaController(gradientColors: $testColors)
     }
 }
