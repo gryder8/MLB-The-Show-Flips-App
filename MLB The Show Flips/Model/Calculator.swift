@@ -96,4 +96,26 @@ class Calculator {
         return (Double(completedOrders.count) / diffInMinutes).round(to: 2)
     }
     
+    func getPriceHistoriesForGraph(priceHistory: [HistoricalPriceValue]) -> (bestBuy: [Double], bestSell: [Double]) {
+        let bestBuy:[Double] = priceHistory.map {price in Double(price.best_buy_price)}
+        let bestSell: [Double] = priceHistory.map {price in Double(price.best_sell_price)}
+        return (bestBuy, bestSell)
+    }
+    
+    func getRates(priceHistory: [HistoricalPriceValue]) -> (buyRate: Int, sellRate: Int) { //TODO: Calc rate of change of prices ((new - old) / old) * 100
+        let newestBuyPrice = priceHistory.first?.best_buy_price ?? 0
+        let newestSellPrice = priceHistory.first?.best_sell_price ?? 0
+        
+        let oldestBuyPrice = priceHistory.last?.best_buy_price ?? 0
+        let oldestSellPrice = priceHistory.last?.best_sell_price ?? 0
+        
+        let buyDiff = newestBuyPrice - oldestBuyPrice
+        let sellDiff = newestSellPrice - oldestSellPrice
+        
+        let buyPct = Int((Double(buyDiff) / Double(max(oldestBuyPrice, 1)))*100) //avoid dividing by 0 using max
+        let sellPct = Int((Double(sellDiff) / Double(max(oldestSellPrice, 1)))*100)
+        
+        return (buyPct, sellPct)
+    }
+    
 }

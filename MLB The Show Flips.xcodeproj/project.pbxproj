@@ -11,6 +11,7 @@
 		860037F92788393000124EA9 /* PremadeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860037F82788393000124EA9 /* PremadeViews.swift */; };
 		8635C98B278980210023564F /* MLB-The-Show-Flips-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8635C98A278980210023564F /* MLB-The-Show-Flips-Info.plist */; };
 		8635C98D278991E30023564F /* PlayerDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8635C98C278991E30023564F /* PlayerDataController.swift */; };
+		863EB27A278EA3940008C677 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = 863EB279278EA3940008C677 /* SwiftUICharts */; };
 		864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */; };
 		864207422782A65B0045FA10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207412782A65B0045FA10 /* ContentView.swift */; };
 		864207442782A65C0045FA10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207432782A65C0045FA10 /* Assets.xcassets */; };
@@ -54,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				863EB27A278EA3940008C677 /* SwiftUICharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +159,9 @@
 			dependencies = (
 			);
 			name = "MLB The Show Flips";
+			packageProductDependencies = (
+				863EB279278EA3940008C677 /* SwiftUICharts */,
+			);
 			productName = "MLB The Show Flips";
 			productReference = 8642073C2782A65B0045FA10 /* MLB The Show Flips.app */;
 			productType = "com.apple.product-type.application";
@@ -185,6 +190,9 @@
 				Base,
 			);
 			mainGroup = 864207332782A65B0045FA10;
+			packageReferences = (
+				863EB278278EA3940008C677 /* XCRemoteSwiftPackageReference "ChartView" */,
+			);
 			productRefGroup = 8642073D2782A65B0045FA10 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -433,6 +441,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		863EB278278EA3940008C677 /* XCRemoteSwiftPackageReference "ChartView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppPear/ChartView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		863EB279278EA3940008C677 /* SwiftUICharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 863EB278278EA3940008C677 /* XCRemoteSwiftPackageReference "ChartView" */;
+			productName = SwiftUICharts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 864207342782A65B0045FA10 /* Project object */;
 }
