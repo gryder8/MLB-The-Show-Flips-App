@@ -100,7 +100,7 @@ class PlayerDataController:ObservableObject {
             isLoading = true
             let (data, response) = try await URLSession.shared.data(from: pageURL)
             
-            print("***Got data, size of \(data)")
+            //print("***Got data, size of \(data)")
             
             if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
                 print("Failed to reach API due to status code: \(resp.statusCode)")
@@ -127,7 +127,7 @@ class PlayerDataController:ObservableObject {
                 //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
             }
             
-            print("Updated allItems, new count is \(allItems.count)")
+            //print("Updated allItems, new count is \(allItems.count)")
             
             lastPageLoaded = currentSequentialPage
             currentSequentialPage += 1
@@ -193,7 +193,7 @@ class PlayerDataController:ObservableObject {
         var allValidModels = getValidPlayers()
         allValidModels.sort(by: {calc.flipProfit($0) > calc.flipProfit($1)}) //in place
         if (!allItems.isEmpty) {
-            print("Returned \(allValidModels.count) cards. \(((Double(allValidModels.count) / Double(allItems.count)) * 100.0).rounded())% of cards were returned")
+            //print("Returned \(allValidModels.count) cards. \(((Double(allValidModels.count) / Double(allItems.count)) * 100.0).rounded())% of cards were returned")
         }
         return allValidModels
     }

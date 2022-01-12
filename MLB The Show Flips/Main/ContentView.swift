@@ -28,19 +28,21 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
 }
 
 //let playerDataController = PlayerDataController()
-let NIL_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
+let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
 
 struct MainListContentRow: View {
     
-    var playerModel: PlayerDataModel
+    @ObservedObject var playerModel: PlayerDataModel
 //    var playerListing: PlayerListing
 //    var playerItem:PlayerItem
     
+    var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
     
-    init (model: PlayerDataModel) {
-        self.playerModel = model
+    init (model: PlayerDataModel, gradColors: [Color]) {
+        self.gradColors = gradColors
+        _playerModel = ObservedObject.init(initialValue: model)
     }
     
     var body: some View {
@@ -75,9 +77,14 @@ struct MainListContentRow: View {
                 })
             
             let text = calc.playerFlipDescription(playerModel).title
-            let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
+            //let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
-                Link("\(text)", destination: url)
+                NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradColors: self.gradColors))
+                    .simultaneousGesture(TapGesture().onEnded({
+                        Task.init {
+                            await playerModel.cacheMarketTransactionData()
+                        }
+                    }))
                     .foregroundColor(.black)
                     .font(.system(size: 22))
                 StubSymbol()
@@ -179,7 +186,7 @@ struct ContentView: View {
                             LazyVStack {
                                 ForEach(playerDataController.sortedModels()) { playerModel in
                                     //let playerItem = playerModel.item
-                                    MainListContentRow(model: playerModel)
+                                    MainListContentRow(model: playerModel, gradColors: gradientColors)
                                         .onAppear {
                                             //dataSource.setCriteria(new: self.criteria)
                                             playerDataController.loadMoreContentIfNeeded(model: playerModel)
@@ -238,7 +245,7 @@ struct ContentView: View {
     private var refreshButton: some View {
         Button {
             playerDataController.reset()
-            playerDataController.loadMoreContentIfNeeded(model: NIL_MODEL)
+            playerDataController.loadMoreContentIfNeeded(model: REFRESH_MODEL)
         } label: {
             Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
                 .scaleEffect(1.5)

@@ -31,7 +31,14 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     var imgURL: URL //constructor
     var page: Int
     
+    var isFetching = false
+    var cachedImage = false //flags so we can call fetching from init()
+    var cachedTransactions = false
+    
     let itemURLBaseString:String = "https://mlb21.theshow.com/apis/listing.json?uuid="
+    
+    let calc = Calculator()
+    @Published var transactionsPerMin: Double = 0
     
     init(name: String, uuid: String, bestBuy: Int, bestSell: Int, ovr:Int, year: Int, shortPos: String, team: String, series: String, imgURL: URL, fromPage: Int) {
         self.name = name
@@ -54,23 +61,27 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     public func cacheImage() async {
         let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
         
-        do {
-            let (data, response) = try await URLSession.shared.data(from: itemURL)
-            
-            if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                print("***Failed to reach API due to status code: \(resp.statusCode)***")
-                return
+        if (!cachedImage) {
+            do {
+                isFetching = true
+                let (data, response) = try await URLSession.shared.data(from: itemURL)
+                
+                if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
+                    print("***Failed to reach API due to status code: \(resp.statusCode)***")
+                    return
+                }
+                
+                let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
+                
+                self.image = await imageFromURL(marketListing.item.img) //update is published
+                isFetching = false
+                cachedImage = true
+                //print("---IMAGE CACHED")
+            } catch {
+                print("***Failed to cache image with error: \(error.localizedDescription) \n URL used for api call: \(itemURL)")
+                self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
+                print("Fell back to default from system")
             }
-            
-            let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
-            
-            self.image = await imageFromURL(marketListing.item.img) //update is published
-            
-            //print("---IMAGE CACHED")
-        } catch {
-            print("***Failed to cache image with error: \(error.localizedDescription) \n URL used for api call: \(itemURL)")
-            self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
-            print("Fell back to default from system")
         }
     }
     
@@ -78,27 +89,33 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     public func cacheMarketTransactionData() async {
         let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
         
-        do {
-            let (data, response) = try await URLSession.shared.data(from: itemURL)
-            
-            if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                print("***Failed to reach API due to status code: \(resp.statusCode)***")
-                return
+        if (!cachedTransactions) {
+            do {
+                isFetching = true
+                let (data, response) = try await URLSession.shared.data(from: itemURL)
+                
+                if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
+                    print("***Failed to reach API due to status code: \(resp.statusCode)***")
+                    return
+                }
+                
+                let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
+                let marketPlayerListing = marketListing
+                
+                self.best_buy_price = marketPlayerListing.best_buy_price //might as well update these too
+                self.best_sell_price = marketPlayerListing.best_sell_price
+                
+                self.completed_orders = marketListing.completed_orders
+                self.price_history = marketListing.price_history
+                isFetching = false
+                cachedTransactions = true
+                self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
+                print("Transactions/min: \(self.transactionsPerMin)")
+                print("---TRANSACTIONS CACHED")
+                
+            } catch {
+                print("***Failed to cache market data with error: \(error.localizedDescription)")
             }
-            
-            let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
-            let marketPlayerListing = marketListing
-            
-            self.best_buy_price = marketPlayerListing.best_buy_price //might as well update these too
-            self.best_sell_price = marketPlayerListing.best_sell_price
-            
-            self.completed_orders = marketListing.completed_orders
-            self.price_history = marketListing.price_history
-            
-            print("---TRANSACTIONS CACHED")
-            
-        } catch {
-            print("***Failed to cache market data with error: \(error.localizedDescription)")
         }
     }
     
@@ -106,6 +123,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         //let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
         
         do {
+            isFetching = true
             let (data, response) = try await URLSession.shared.data(from: imgURL)
             
             if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
@@ -125,6 +143,8 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
             self.shortPos = marketPlayerItem.display_position
             self.year = marketPlayerItem.series_year
             
+            isFetching = false
+            
             print("---LISTING CACHED")
             
         } catch {
@@ -136,6 +156,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     private func imageFromURL(_ url: URL) async -> Image {
         let errorImage = Image(systemName: "person.crop.circle.badge.exclamationmark")
         do {
+            isFetching = true
             let (data, response) = try await URLSession.shared.data(from: url)
             
             if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
@@ -146,6 +167,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
             let img: UIImage = UIImage(data: data)!
             let ret = Image(uiImage: img)
             //print("---GOT IMAGE FROM URL")
+            isFetching = false
             return ret
         } catch {
             print("***Failed to parse image with exception: \(error.localizedDescription)")
@@ -153,9 +175,9 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         return errorImage //error
     }
 }
-    
 
-    
+
+
 //
 //    @discardableResult func loadMoreContentIfNeeded(currentItem item: PlayerListing?) -> Bool { //returns true if more content is needed
 //        guard let item = item else { //got to a null item, load more data!

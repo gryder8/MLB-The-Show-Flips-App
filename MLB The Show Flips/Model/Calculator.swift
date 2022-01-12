@@ -8,6 +8,13 @@
 import Foundation
 import SwiftUI
 
+extension Double {
+    func round(to places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
 class Calculator {
 //    private var criteria: Criteria
 //
@@ -71,6 +78,22 @@ class Calculator {
         let nameAndFlipMargin = "\(playerModel.name): \(signFor(flipVal))\(flipVal) "
         let desc = "\(playerModel.ovr) OVR \(playerModel.shortPos), \(playerModel.team), \(playerModel.year): \(playerModel.series)"
         return (nameAndFlipMargin, desc)
+    }
+    
+    func transactionsPerMinute(completedOrders: [CompletedOrder]) -> Double {
+        let dateFormatter = DateFormatter()
+
+        dateFormatter.dateFormat = "MM/dd/yy hh:mm:ssa"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let mostRecent: CompletedOrder? = completedOrders.first
+        let last: CompletedOrder?  = completedOrders.last
+        
+        let firstDate: Date = dateFormatter.date(from: mostRecent!.date) ?? Date()
+        let lastDate: Date = dateFormatter.date(from: last!.date) ?? Date()
+
+        let diffInMinutes = ((firstDate.timeIntervalSinceReferenceDate - lastDate.timeIntervalSinceReferenceDate) / 60).rounded()
+        return (Double(completedOrders.count) / diffInMinutes).round(to: 2)
     }
     
 }
