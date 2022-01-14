@@ -18,16 +18,18 @@ struct SeriesExclusion: View {
     
     @Binding var gradColors: [Color]
     @State private var selection: Set<String> = Set<String>()
+    @ObservedObject var playerDataController: PlayerDataController
     //@EnvironmentObject var criteria:Criteria
     
     
-    init(gradColors: [Color]) {
+    init(gradColors: [Color], dataController dc: PlayerDataController) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
         UITableView.appearance().backgroundColor = .clear
         
         _gradColors = Binding.constant(gradColors)
+        _playerDataController = ObservedObject.init(initialValue: dc)
         
         //UINavigationBar.appearance().standardAppearance
         //print(criteria.excludedSeries)
@@ -57,6 +59,7 @@ struct SeriesExclusion: View {
                     .onDisappear(perform: {
                         Criteria.shared.excludedSeries = Array(selection)
                         print(Criteria.shared.excludedSeries)
+                        self.playerDataController.refilterDataForNewCriteria()
                     })
                     .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)
@@ -80,6 +83,6 @@ struct SeriesExclusion: View {
 struct SeriesExclusion_Previews: PreviewProvider {
     static var testColors: [Color] = [.orange, .black]
     static var previews: some View {
-        SeriesExclusion(gradColors: testColors)
+        SeriesExclusion(gradColors: testColors, dataController: PlayerDataController())
     }
 }

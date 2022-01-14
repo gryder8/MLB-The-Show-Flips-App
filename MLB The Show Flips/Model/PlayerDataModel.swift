@@ -58,68 +58,85 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
     }
     
-    @discardableResult public func cacheImage() async -> Image {
-        let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
+    public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
+        let itemURL: URL = URL(string: "\(self.imgURL)")!
         
         if (!cachedImage) {
             do {
                 isFetching = true
-                let (data, response) = try await URLSession.shared.data(from: itemURL)
+                let req = URLRequest(url: itemURL)
+                //print("Beginning async let for \(name)...")
+                async let (data, _) = URLSession.shared.data(for: req)
                 
-                if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                    print("***Failed to reach API due to status code: \(resp.statusCode)***")
+                guard let uiImage = try await UIImage(data: data) else {
                     return Image(systemName: "person.crop.circle.badge.exclamationmark")
                 }
+                //print("UIImage processed for \(name)...")
                 
-                let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
-                
-                self.image = await imageFromURL(marketListing.item.img) //update is published
-                isFetching = false
-                cachedImage = true
-                //print("---IMAGE CACHED")
+                return Image(uiImage: uiImage)
             } catch {
-                print("***Failed to cache image with error: \(error.localizedDescription) \n URL used for api call: \(itemURL)")
+                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
                 self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
                 print("Fell back to default from system")
             }
+        } else { //image already cached, just return what we have
+            return self.image
         }
-        return self.image
+        return Image(systemName: "person.crop.circle.badge.exclamationmark") //fall out (error)
+    }
+    
+    func cacheImage(_ image: Image) {
+        self.image = image
+        print("*Image cached for \(self.name)*")
     }
     
     
-    public func cacheMarketTransactionData() async {
+    
+    public func getMarketDataForModel() async -> MarketListing {
         let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
+        let errorImgURL = URL(string: "https://mlb21.theshow.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczVzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a63051376496444a959d408eeb385c660d229548/e53423a698b7afe59590c90a70cd448d.jpg")!
+        let errorPlayerItem = PlayerItem(uuid: "ERR", name: "Error", rarity: "ERR", team: "ERR", team_short_name: "ERR", img: errorImgURL, ovr: 0, series: "ERROR", display_position: "ex", series_year: 2021)
+        let errorMarketListing = MarketListing(best_sell_price: 0, best_buy_price: 0, item: errorPlayerItem, price_history: [], completed_orders: [])
         
         if (!cachedTransactions) {
             do {
                 isFetching = true
-                let (data, response) = try await URLSession.shared.data(from: itemURL)
+                let req = URLRequest(url: itemURL)
+                async let (data, _) = URLSession.shared.data(for: req)
                 
-                if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                    print("***Failed to reach API due to status code: \(resp.statusCode)***")
-                    return
-                }
+                let marketListing: MarketListing = try await JSONDecoder().decode(MarketListing.self, from: data)
                 
-                let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
-                let marketPlayerListing = marketListing
-                
-                self.best_buy_price = marketPlayerListing.best_buy_price //might as well update these too
-                self.best_sell_price = marketPlayerListing.best_sell_price
-                
-                self.completed_orders = marketListing.completed_orders
-                self.price_history = marketListing.price_history
-                isFetching = false
-                cachedTransactions = true
-                self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
-                print("Transactions/min: \(self.transactionsPerMin)")
-                print("---TRANSACTIONS CACHED")
-                
+                return marketListing
+  
             } catch {
                 print("***Failed to cache market data with error: \(error.localizedDescription)")
             }
+        } else {
+            let item = PlayerItem(uuid: uuid, name: name, rarity: "", team: self.team, team_short_name: "", img: self.imgURL, ovr: self.ovr, series: self.series, display_position: self.shortPos, series_year: self.year)
+            return MarketListing(best_sell_price: best_sell_price, best_buy_price: best_buy_price, item: item, price_history: self.price_history, completed_orders: self.completed_orders)
         }
+        return errorMarketListing //error
     }
     
+    public func cacheMarketDate(_ marketData: MarketListing) { //TODO: Have this only recache after a certain time has elapsed
+        //store the date of the last cache and compare it to Date()
+        self.best_buy_price = marketData.best_buy_price
+        self.best_sell_price = marketData.best_sell_price
+        
+        self.completed_orders = marketData.completed_orders
+        self.price_history = marketData.price_history
+        
+        isFetching = false
+        cachedTransactions = true
+        self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
+        
+        print("Transactions/min: \(self.transactionsPerMin)")
+        print("---TRANSACTIONS CACHED")
+    }
+    
+    
+    
+    /*
     public func cachePlayerListing() async { //update
         //let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
         
@@ -152,6 +169,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
             print("***Failed to cache market data with error: \(error.localizedDescription)")
         }
     }
+     */
     
     
     private func imageFromURL(_ url: URL) async -> Image {

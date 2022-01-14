@@ -18,6 +18,7 @@ class PlayerDataController:ObservableObject {
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
     //private var pagedAllItems: [Int: PlayerDataModel] = [:] //to get all items on a page, flatten to array using compact map
     @Published private var itemsForDisplay: [String: PlayerDataModel] = [:]
+
     
     var totalPages = 107
     private var lastPageLoaded = 0
@@ -44,11 +45,12 @@ class PlayerDataController:ObservableObject {
     func refilterDataForNewCriteria() {
         itemsForDisplay = allItems.filter { item in
             item.value.best_buy_price <= Criteria.shared.budget &&
-            calc.flipProfit(item.value) >= Criteria.shared.minProfit
+            calc.flipProfit(item.value) >= Criteria.shared.minProfit &&
+            !Criteria.shared.excludedSeries.contains(item.value.series)
         }
     }
     
-    
+    /*
     func cachePage(_ pageNum: Int) async {
         if (pageNum > Criteria.shared.endPage || pageNum > totalPages) {
             return
@@ -74,7 +76,7 @@ class PlayerDataController:ObservableObject {
             for listing in page.listings {
                 let itm = listing.item
                 var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-                await playerDataModel.cacheImage()
+                await playerDataModel.getImageForModel()
                 
                 if (criteria.meetsFlippingCriteria(&playerDataModel)) {
                     itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
@@ -92,9 +94,13 @@ class PlayerDataController:ObservableObject {
             print("***Error caching page: \(error.localizedDescription)")
         }
     }
+     */
     
-    func cacheSequentialPage() async {
-        print("Curr page: \(currentSequentialPage)")
+    func cacheSequentialPage(fromRefresh: Bool = false) async {
+        if (fromRefresh) {
+            currentSequentialPage = 1
+        }
+        print("Curr page in sequntial cache: \(currentSequentialPage)")
         if (currentSequentialPage > totalPages || currentSequentialPage > Criteria.shared.endPage) {
             return
         }
@@ -113,7 +119,6 @@ class PlayerDataController:ObservableObject {
             }
             
             let page = try JSONDecoder().decode(Page.self, from: data)
-            
             if (totalPages != page.total_pages) { //update if needed
                 totalPages = page.total_pages
             }
@@ -124,40 +129,26 @@ class PlayerDataController:ObservableObject {
                     var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
                     let myModel = playerDataModel //pointer to the val which we use as basis for call the function within the call group
                     
-                    group.addTask(priority: .high) {
-                        return await myModel.cacheImage() //make this into an async let so we can await the results below when updating
+                    print("Adding image for \(myModel.name)...")
+                    group.addTask(priority: .high, operation: {
+                        return await myModel.getImageForModel()
+                    }) //make this into an async let so we can await the results below when updating
+                    
+                    for await myImage in group { //synchronous
+                        if Task.isCancelled { break }
+                        playerDataModel.cacheImage(myImage)
+                        //print("Added image for \(playerDataModel.name)")
                     }
                     
-                    for await myImage in group {
-                        print("Added image for \(playerDataModel.name)")
-                        playerDataModel.image = myImage
-                    }
-                    
+                    //update models if needed (concurrent operation, should be very fast)
                     if (criteria.meetsFlippingCriteria(&playerDataModel)) {
                         itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
                     }
                     
                     allItems.updateValue(playerDataModel, forKey: itm.uuid)
                     
-                    //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
                 }
             })
-            
-//            for listing in page.listings { //blocking is here, where we are blocking the thread waiting on each image and thus essentially seeing synchronous behavior
-//                let itm = listing.item
-//                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-//                await playerDataModel.cacheImage() //make this into an async let so we can await the results below when updating
-//
-//                if (criteria.meetsFlippingCriteria(&playerDataModel)) {
-//                    itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
-//                }
-//
-//                allItems.updateValue(playerDataModel, forKey: itm.uuid)
-//
-//                //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
-//            }
-            
-            //print("Updated allItems, new count is \(allItems.count)")
             
             lastPageLoaded = currentSequentialPage
             currentSequentialPage += 1
@@ -167,53 +158,10 @@ class PlayerDataController:ObservableObject {
         } catch {
             print("***Error caching page: \(error.localizedDescription)")
         }
+
     }
     
-    
-    func cacheNextPage() async {
-        if (lastPageLoaded == totalPages || lastPageLoaded >= Criteria.shared.endPage) {
-            return
-        }
-        
-        let pageNum = lastPageLoaded+1
-        
-        let pageURL = URL(string: "\(pageBaseURL)\(pageNum)")!
-        
-        do {
-            isLoading = true
-            let (data, response) = try await URLSession.shared.data(from: pageURL)
-            
-            if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                print("**Failed to reach API due to status code: \(resp.statusCode)")
-                return
-            }
-            
-            let page = try JSONDecoder().decode(Page.self, from: data)
-            
-            totalPages = page.total_pages
-            
-            for listing in page.listings {
-                let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-                await playerDataModel.cacheImage() //cache the image of the model when we create it
-                
-                if (criteria.meetsFlippingCriteria(&playerDataModel)) {
-                    itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
-                }
-                
-                allItems.updateValue(playerDataModel, forKey: itm.uuid)
-                //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
-            }
-            
-            
-            lastPageLoaded = page.page
-            pctComplete = Double(lastPageLoaded) / Double(totalPages)
-            isLoading = false
-        } catch {
-            print("***Error caching page: \(error.localizedDescription)")
-        }
-    }
-    
+   
     func sortedModelsForPage(_ pageNum: Int) {
         var validModelsForPage = getValidPlayersForPage(pageNum)
         return validModelsForPage.sort(by: {calc.flipProfit($0) > calc.flipProfit($1)})
@@ -257,9 +205,10 @@ class PlayerDataController:ObservableObject {
         }
     }
     
-    func loadMoreContentIfNeeded(model: PlayerDataModel) {
+    func loadMoreContentIfNeeded(model: PlayerDataModel, refresh: Bool = false) {
         let allModelsSorted = sortedModels()
         let count = allModelsSorted.count
+        
         
         if (isLoading) {
             return
@@ -267,7 +216,8 @@ class PlayerDataController:ObservableObject {
         
         if (model.uuid == "REFRESH") {
             Task(priority: .high, operation: {
-                await cacheSequentialPage()
+                await cacheSequentialPage(fromRefresh: refresh)
+                print("Toggled fetch")
             })
             
             print("Loading more data [refresh triggered]...")
@@ -278,13 +228,14 @@ class PlayerDataController:ObservableObject {
             if (abs(count - idx) <= 1) {
                 print("Loading more data [near bottom of array]...")
                 Task.init {
-                    await cacheSequentialPage()
+                    await cacheSequentialPage(fromRefresh: refresh)
+                    print("Toggled fetch")
                 }
             }
         } else { //idx not found (shouldn't be the case)
             print("Loading more data [error!]...")
             Task.init {
-                await cacheSequentialPage()
+                await cacheSequentialPage(fromRefresh: refresh)
                 
             }
         }
@@ -300,20 +251,20 @@ class PlayerDataController:ObservableObject {
     
     private func cacheMarketDataForModelAtUUID(_ uuid: String) async {
         if let retrievedModel = allItems[uuid] {
-            await retrievedModel.cacheMarketTransactionData()
+            await retrievedModel.getMarketDataForModel()
         }
     }
     
     private func cacheImageForModelAtUUID(_ uuid: String) async {
         if let retrievedModel = allItems[uuid] {
-            await retrievedModel.cacheImage()
+            await retrievedModel.getImageForModel()
         }
         
     }
     
     private func cachePlayerListingForModelAtUUID(_ uuid: String) async {
         if let retrievedModel = allItems[uuid] {
-            await retrievedModel.cacheMarketTransactionData()
+            await retrievedModel.getMarketDataForModel()
         }
         
     }

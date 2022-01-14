@@ -34,8 +34,8 @@ let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", b
 struct MainListContentRow: View {
     
     @ObservedObject var playerModel: PlayerDataModel
-//    var playerListing: PlayerListing
-//    var playerItem:PlayerItem
+    //    var playerListing: PlayerListing
+    //    var playerItem:PlayerItem
     
     var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
@@ -48,30 +48,30 @@ struct MainListContentRow: View {
     var body: some View {
         let calc = Calculator()
         VStack {
-//            AsyncImage(url: playerModel.imgURL, transaction: Transaction(animation: .easeInOut)) { phase in
-//                switch phase {
-//                case .empty:
-//                    ProgressView()
-//                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-//                        .scaleEffect(1.5, anchor: .center)
-//                case .success(let image):
-//                    image
-//                        .fixedSize(horizontal: true, vertical: true)
-//                case .failure:
-//                    Image(systemName: "person.crop.circle.badge.exclamationmark")
-//                        .scaleEffect(3.5)
-//                        .padding(.bottom, 10)
-//                        .foregroundColor(.red)
-//                @unknown default:
-//                    EmptyView()
-//                }
-//            }
+            //            AsyncImage(url: playerModel.imgURL, transaction: Transaction(animation: .easeInOut)) { phase in
+            //                switch phase {
+            //                case .empty:
+            //                    ProgressView()
+            //                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
+            //                        .scaleEffect(1.5, anchor: .center)
+            //                case .success(let image):
+            //                    image
+            //                        .fixedSize(horizontal: true, vertical: true)
+            //                case .failure:
+            //                    Image(systemName: "person.crop.circle.badge.exclamationmark")
+            //                        .scaleEffect(3.5)
+            //                        .padding(.bottom, 10)
+            //                        .foregroundColor(.red)
+            //                @unknown default:
+            //                    EmptyView()
+            //                }
+            //            }
             
             playerModel.image
                 .onAppear(perform: {
                     if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
                         Task.init {
-                            await playerModel.cacheImage()
+                            await playerModel.getImageForModel()
                         }
                     }
                 })
@@ -82,7 +82,8 @@ struct MainListContentRow: View {
                 NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradColors: self.gradColors))
                     .simultaneousGesture(TapGesture().onEnded({
                         Task.init {
-                            await playerModel.cacheMarketTransactionData()
+                            async let marketData =  playerModel.getMarketDataForModel()
+                            await playerModel.cacheMarketDate(marketData)
                         }
                     }))
                     .foregroundColor(.black)
@@ -117,10 +118,10 @@ struct MainListContentRow: View {
 //    }
 //}
 
-
+//@MainActor
 struct ContentView: View {
     
-    
+    public static var hasInitialized = false
     
     init() {
         // this is not the same as manipulating the proxy directly
@@ -177,46 +178,53 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
                     ScrollView {
-                        VStack {
-                            HStack(spacing: 3) {
-                                Text("Budget Per Card: \(Criteria.shared.budget)")
-                                    .padding(.vertical, 10)
-                                StubSymbol()
-                            }
-                            LazyVStack {
-                                ForEach(playerDataController.sortedModels()) { playerModel in
-                                    //let playerItem = playerModel.item
-                                    MainListContentRow(model: playerModel, gradColors: gradientColors)
-                                        .onAppear {
-                                            //dataSource.setCriteria(new: self.criteria)
-                                            playerDataController.loadMoreContentIfNeeded(model: playerModel)
-                                            
-                                        }
-                                        .padding(.all, 30)
+                        ScrollViewReader { value in
+                            VStack {
+                                HStack(spacing: 3) {
+                                    Text("Budget Per Card: \(Criteria.shared.budget)")
+                                        .padding(.vertical, 10)
+                                    StubSymbol()
                                 }
-                                
-                                if playerDataController.isLoading {
-                                    ProgressView()
-                                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                                        .scaleEffect(1.5, anchor: .center)
+                                LazyVStack {
+                                    ForEach(playerDataController.sortedModels()) { playerModel in
+                                        //let playerItem = playerModel.item
+                                        MainListContentRow(model: playerModel, gradColors: gradientColors)
+                                            .onAppear {
+                                                ContentView.hasInitialized = true
+                                                //dataSource.setCriteria(new: self.criteria)
+                                                if (!playerModel.cachedTransactions) {
+                                                    playerDataController.loadMoreContentIfNeeded(model: playerModel)
+                                                }
+                                            }
+                                            .padding(.all, 30)
+                                    }
+                                    
+                                    
+                                    if playerDataController.isLoading {
+                                        ProgressView()
+                                            .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                                            .scaleEffect(1.5, anchor: .center)
+                                    }
+                                    
                                 }
-                                
                             }
                         }
                     }
-//                        .onAppear(perform: {
-//                        if (!Universals.firstLoad) {
-//                            print("Exclusions: \(criteria.excludedSeries)")
-//                            dataSource.refilterItems(with: Universals.criteria)
-//                        } else {
-//                            Universals.firstLoad = false
-//                        }
-//
-//                    })
+                    //                        .onAppear(perform: {
+                    //                        if (!Universals.firstLoad) {
+                    //                            print("Exclusions: \(criteria.excludedSeries)")
+                    //                            dataSource.refilterItems(with: Universals.criteria)
+                    //                        } else {
+                    //                            Universals.firstLoad = false
+                    //                        }
+                    //
+                    //                    })
                 )
                 .navigationTitle("Best Flips")
-                .task {
-                    await playerDataController.cacheSequentialPage()
+                .task(priority: .high) {
+                    if (!ContentView.hasInitialized) { //only run this task when the view has not been initialized
+                        await playerDataController.cacheSequentialPage()
+                    }
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -245,7 +253,7 @@ struct ContentView: View {
     private var refreshButton: some View {
         Button {
             playerDataController.reset()
-            playerDataController.loadMoreContentIfNeeded(model: REFRESH_MODEL)
+            playerDataController.loadMoreContentIfNeeded(model: REFRESH_MODEL, refresh: true)
         } label: {
             Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
                 .scaleEffect(1.5)

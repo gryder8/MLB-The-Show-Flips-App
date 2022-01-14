@@ -160,11 +160,11 @@ struct CriteriaController: View {
                             
                         }.padding(.horizontal, leftEdge)
                         
-                        Stepper("Ending marketplace page: \(endPage)", onIncrement: {
-                            endPage = min(Criteria.shared.endPage, endPage+1)
-                        }, onDecrement: {
-                            endPage = max(Criteria.startPage, endPage-1)
-                        }).padding(.horizontal, leftEdge)
+//                        Stepper("Ending marketplace page: \(endPage)", onIncrement: {
+//                            endPage = min(Criteria.shared.endPage, endPage+1)
+//                        }, onDecrement: {
+//                            endPage = max(Criteria.startPage, endPage-1)
+//                        }).padding(.horizontal, leftEdge)
                         
                         excludeSeriesButton
                             .padding(.leading, leftEdge-5)
@@ -178,7 +178,7 @@ struct CriteriaController: View {
     }
     
     private var excludeSeriesButton: some View {
-        NavigationLink(destination: SeriesExclusion(gradColors: gradientColors)) {
+        NavigationLink(destination: SeriesExclusion(gradColors: gradientColors, dataController: self.dataController)) {
             HStack {
                 Text("Exclude Card Series")
                 Image(systemName: "arrow.right")
