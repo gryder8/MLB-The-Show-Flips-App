@@ -7,10 +7,12 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 
 //TODO: Integrate controls with new code, using ObservedObject
 //  -for the criteria, pass it down as an observed object and call a method to reset the data by setting the cards for display as a sub-dict of AllItems
+//@MainActor
 class PlayerDataController:ObservableObject {
     
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
@@ -34,7 +36,9 @@ class PlayerDataController:ObservableObject {
         allItems.removeAll()
         itemsForDisplay.removeAll()
         lastPageLoaded = 0
+        pctComplete = 0.0
         currentSequentialPage = Criteria.startPage
+        print("Reset to page \(currentSequentialPage)")
     }
     
     func refilterDataForNewCriteria() {
@@ -90,6 +94,7 @@ class PlayerDataController:ObservableObject {
     }
     
     func cacheSequentialPage() async {
+        print("Curr page: \(currentSequentialPage)")
         if (currentSequentialPage > totalPages || currentSequentialPage > Criteria.shared.endPage) {
             return
         }
@@ -113,19 +118,44 @@ class PlayerDataController:ObservableObject {
                 totalPages = page.total_pages
             }
             
-            for listing in page.listings {
-                let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-                await playerDataModel.cacheImage()
-                
-                if (criteria.meetsFlippingCriteria(&playerDataModel)) {
-                    itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
+            await withTaskGroup(of: Image.self, body: { group in
+                for listing in page.listings { //improved performance a little
+                    let itm = listing.item
+                    var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
+                    let myModel = playerDataModel //pointer to the val which we use as basis for call the function within the call group
+                    
+                    group.addTask(priority: .high) {
+                        return await myModel.cacheImage() //make this into an async let so we can await the results below when updating
+                    }
+                    
+                    for await myImage in group {
+                        print("Added image for \(playerDataModel.name)")
+                        playerDataModel.image = myImage
+                    }
+                    
+                    if (criteria.meetsFlippingCriteria(&playerDataModel)) {
+                        itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
+                    }
+                    
+                    allItems.updateValue(playerDataModel, forKey: itm.uuid)
+                    
+                    //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
                 }
-                
-                allItems.updateValue(playerDataModel, forKey: itm.uuid)
-                
-                //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
-            }
+            })
+            
+//            for listing in page.listings { //blocking is here, where we are blocking the thread waiting on each image and thus essentially seeing synchronous behavior
+//                let itm = listing.item
+//                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
+//                await playerDataModel.cacheImage() //make this into an async let so we can await the results below when updating
+//
+//                if (criteria.meetsFlippingCriteria(&playerDataModel)) {
+//                    itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
+//                }
+//
+//                allItems.updateValue(playerDataModel, forKey: itm.uuid)
+//
+//                //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
+//            }
             
             //print("Updated allItems, new count is \(allItems.count)")
             
@@ -235,11 +265,12 @@ class PlayerDataController:ObservableObject {
             return
         }
         
-        if (model.uuid == "NIL") {
-            Task.init {
+        if (model.uuid == "REFRESH") {
+            Task(priority: .high, operation: {
                 await cacheSequentialPage()
-            }
-            print("Loading more data [nil fallout]...")
+            })
+            
+            print("Loading more data [refresh triggered]...")
             return
         }
         

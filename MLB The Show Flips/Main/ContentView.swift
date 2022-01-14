@@ -28,7 +28,7 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
 }
 
 //let playerDataController = PlayerDataController()
-let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "NIL", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
+let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
 
 struct MainListContentRow: View {

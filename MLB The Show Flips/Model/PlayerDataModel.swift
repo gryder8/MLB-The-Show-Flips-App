@@ -58,7 +58,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
     }
     
-    public func cacheImage() async {
+    @discardableResult public func cacheImage() async -> Image {
         let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
         
         if (!cachedImage) {
@@ -68,7 +68,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
                 
                 if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
                     print("***Failed to reach API due to status code: \(resp.statusCode)***")
-                    return
+                    return Image(systemName: "person.crop.circle.badge.exclamationmark")
                 }
                 
                 let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
@@ -83,6 +83,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
                 print("Fell back to default from system")
             }
         }
+        return self.image
     }
     
     
