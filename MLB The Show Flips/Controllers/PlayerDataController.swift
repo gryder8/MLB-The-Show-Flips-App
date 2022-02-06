@@ -16,8 +16,8 @@ import SwiftUI
 class PlayerDataController:ObservableObject {
     
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
-    //private var pagedAllItems: [Int: PlayerDataModel] = [:] //to get all items on a page, flatten to array using compact map
-    @Published private var itemsForDisplay: [String: PlayerDataModel] = [:]
+    //private var pagedAllItems: [Int: PlayerDataModel] = [:] //to get  all items on a page, flatten to array using compact map
+    @Published public var itemsForDisplay: [String: PlayerDataModel] = [:]
 
     
     var totalPages = 107
@@ -100,7 +100,7 @@ class PlayerDataController:ObservableObject {
         if (fromRefresh) {
             currentSequentialPage = 1
         }
-        print("Curr page in sequntial cache: \(currentSequentialPage)")
+        print("Curr page in sequential cache: \(currentSequentialPage)")
         if (currentSequentialPage > totalPages || currentSequentialPage > Criteria.shared.endPage) {
             return
         }
@@ -132,7 +132,7 @@ class PlayerDataController:ObservableObject {
                     print("Adding image for \(myModel.name)...")
                     group.addTask(priority: .high, operation: {
                         return await myModel.getImageForModel()
-                    }) //make this into an async let so we can await the results below when updating
+                    })
                     
                     for await myImage in group { //synchronous
                         if Task.isCancelled { break }

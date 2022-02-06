@@ -89,7 +89,7 @@ struct CardDetailView: View {
                         goToWebLink
                         let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
                         let rates  = calc.getRates(priceHistory: playerModel.price_history)
-                        let chartStyle = ChartStyle(backgroundColor: gradientColors.first!, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
+                        let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
                         HStack (spacing: 10){
                             LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
                             LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
