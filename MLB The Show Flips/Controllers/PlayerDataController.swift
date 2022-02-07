@@ -129,16 +129,16 @@ class PlayerDataController:ObservableObject {
                     var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
                     let myModel = playerDataModel //pointer to the val which we use as basis for call the function within the call group
                     
-                    print("Adding image for \(myModel.name)...")
-                    group.addTask(priority: .high, operation: {
-                        return await myModel.getImageForModel()
-                    })
-                    
-                    for await myImage in group { //synchronous
-                        if Task.isCancelled { break }
-                        playerDataModel.cacheImage(myImage)
-                        //print("Added image for \(playerDataModel.name)")
-                    }
+//                    print("Adding image for \(myModel.name)...")
+//                    group.addTask(priority: .high, operation: {
+//                        return await myModel.getImageForModel()
+//                    })
+//
+//                    for await myImage in group { //synchronous
+//                        if Task.isCancelled { break }
+//                        playerDataModel.cacheImage(myImage)
+//                        //print("Added image for \(playerDataModel.name)")
+//                    }
                     
                     //update models if needed (concurrent operation, should be very fast)
                     if (criteria.meetsFlippingCriteria(&playerDataModel)) {
@@ -255,12 +255,12 @@ class PlayerDataController:ObservableObject {
         }
     }
     
-    private func cacheImageForModelAtUUID(_ uuid: String) async {
-        if let retrievedModel = allItems[uuid] {
-            await retrievedModel.getImageForModel()
-        }
-        
-    }
+//    private func cacheImageForModelAtUUID(_ uuid: String) async {
+//        if let retrievedModel = allItems[uuid] {
+//            await retrievedModel.getImageForModel()
+//        }
+//        
+//    }
     
     private func cachePlayerListingForModelAtUUID(_ uuid: String) async {
         if let retrievedModel = allItems[uuid] {

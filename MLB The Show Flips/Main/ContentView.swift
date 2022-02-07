@@ -48,34 +48,15 @@ struct MainListContentRow: View {
     var body: some View {
         let calc = Calculator()
         VStack {
-            //            AsyncImage(url: playerModel.imgURL, transaction: Transaction(animation: .easeInOut)) { phase in
-            //                switch phase {
-            //                case .empty:
-            //                    ProgressView()
-            //                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-            //                        .scaleEffect(1.5, anchor: .center)
-            //                case .success(let image):
-            //                    image
-            //                        .fixedSize(horizontal: true, vertical: true)
-            //                case .failure:
-            //                    Image(systemName: "person.crop.circle.badge.exclamationmark")
-            //                        .scaleEffect(3.5)
-            //                        .padding(.bottom, 10)
-            //                        .foregroundColor(.red)
-            //                @unknown default:
-            //                    EmptyView()
-            //                }
-            //            }
-            
-            playerModel.image
-                .onAppear(perform: {
-                    if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
-                        Task.init {
-                            await playerModel.getImageForModel()
-                        }
-                    }
-                })
-            
+//            playerModel.image
+//                .onAppear(perform: {
+//                    if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
+//                        Task.init {
+//                            await playerModel.getImageForModel()
+//                        }
+//                    }
+//                })
+//
             let text = calc.playerFlipDescription(playerModel).title
             //let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
@@ -87,12 +68,12 @@ struct MainListContentRow: View {
                         }
                     }))
                     .foregroundColor(.black)
-                    .font(.system(size: 22))
+                    .font(.system(size: 30, weight: .semibold, design: .rounded))
                 StubSymbol()
             }.transition(.slide.animation(.easeInOut))
             Text(calc.playerFlipDescription(playerModel).desc)
                 .foregroundColor(Colors.darkGray)
-                .font(.system(size: 16))
+                .font(.system(size: 20, design: .rounded))
         }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
     }
 }

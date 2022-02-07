@@ -58,32 +58,32 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
     }
     
-    public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
-        let itemURL: URL = URL(string: "\(self.imgURL)")!
-        
-        if (!cachedImage) {
-            do {
-                isFetching = true
-                let req = URLRequest(url: itemURL)
-                //print("Beginning async let for \(name)...")
-                async let (data, _) = URLSession.shared.data(for: req)
-                
-                guard let uiImage = try await UIImage(data: data) else {
-                    return Image(systemName: "person.crop.circle.badge.exclamationmark")
-                }
-                //print("UIImage processed for \(name)...")
-                
-                return Image(uiImage: uiImage)
-            } catch {
-                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
-                self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
-                print("Fell back to default from system")
-            }
-        } else { //image already cached, just return what we have
-            return self.image
-        }
-        return Image(systemName: "person.crop.circle.badge.exclamationmark") //fall out (error)
-    }
+//    public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
+//        let itemURL: URL = URL(string: "\(self.imgURL)")!
+//
+//        if (!cachedImage) {
+//            do {
+//                isFetching = true
+//                let req = URLRequest(url: itemURL)
+//                //print("Beginning async let for \(name)...")
+//                async let (data, _) = URLSession.shared.data(for: req)
+//                
+//                guard let uiImage = try await UIImage(data: data) else {
+//                    return Image(systemName: "person.crop.circle.badge.exclamationmark")
+//                }
+//                //print("UIImage processed for \(name)...")
+//
+//                return Image(uiImage: uiImage)
+//            } catch {
+//                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
+//                self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
+//                print("Fell back to default from system")
+//            }
+//        } else { //image already cached, just return what we have
+//            return self.image
+//        }
+//        return Image(systemName: "person.crop.circle.badge.exclamationmark") //fall out (error)
+//    }
     
     func cacheImage(_ image: Image) {
         self.image = image

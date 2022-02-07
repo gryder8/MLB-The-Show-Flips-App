@@ -68,13 +68,12 @@ struct CardDetailView: View {
                     VStack { //top level
                         VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
                             
-                            playerModel.image
+                            //playerModel.image
                             
-                            //Text(marketListing.completed_orders[0].date)
                             
                             Text(playerModel.name)
                                 .foregroundColor(.black)
-                                .font(.system(size: 22))
+                                .font(.system(size: 36, weight: .semibold, design: .rounded))
                             
                             Text(calc.playerFlipDescription(self.playerModel).1)
                                 .foregroundColor(Colors.darkGray)
