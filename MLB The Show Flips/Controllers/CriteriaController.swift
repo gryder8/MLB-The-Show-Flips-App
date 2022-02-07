@@ -91,7 +91,7 @@ struct CriteriaController: View {
                                     }
                                     
                                 }
-                                .alert("Min Profit set to \(Criteria.shared.minProfit) stubs", isPresented: $showMinProfitAlert) {
+                                .alert("Minimum Profit set to \(Criteria.shared.minProfit) stubs", isPresented: $showMinProfitAlert) {
                                     Button("Dismiss"){}
                                 }
                                 .alert("Enter a valid number!", isPresented: $showErrorAlert) {

@@ -27,6 +27,17 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     }
 }
 
+struct CustomDivider: View {
+    let color: Color = .gray
+    let width: CGFloat = 1.2
+    var body: some View {
+        Rectangle()
+            .fill(.black)
+            .frame(height: width)
+            .edgesIgnoringSafeArea(.horizontal)
+    }
+}
+
 //let playerDataController = PlayerDataController()
 let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
@@ -48,6 +59,7 @@ struct MainListContentRow: View {
     var body: some View {
         let calc = Calculator()
         VStack {
+            CustomDivider()
 //            playerModel.image
 //                .onAppear(perform: {
 //                    if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
@@ -74,32 +86,12 @@ struct MainListContentRow: View {
             Text(calc.playerFlipDescription(playerModel).desc)
                 .foregroundColor(Colors.darkGray)
                 .font(.system(size: 20, design: .rounded))
+            CustomDivider()
         }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
     }
 }
 
-//struct CustomDivider: View {
-//    let color: Color = .black
-//    let width: CGFloat = 1.3
-//    var body: some View {
-//        Rectangle()
-//            .fill(color)
-//            .frame(height: width)
-//            .edgesIgnoringSafeArea(.horizontal)
-//    }
-//}
-
-//struct Universals: ViewModifier {
-//    static var criteria = Criteria()
-//    static var firstLoad = true
-//
-//    func body(content: Content) -> some View {
-//        content
-//            .environmentObject(Self.criteria)
-//    }
-//}
-
-//@MainActor
+@MainActor
 struct ContentView: View {
     
     public static var hasInitialized = false
@@ -164,6 +156,7 @@ struct ContentView: View {
                                 HStack(spacing: 3) {
                                     Text("Budget Per Card: \(Criteria.shared.budget)")
                                         .padding(.vertical, 10)
+                                        .font(.system(size: 20, design: .rounded))
                                     StubSymbol()
                                 }
                                 LazyVStack {
@@ -191,15 +184,6 @@ struct ContentView: View {
                             }
                         }
                     }
-                    //                        .onAppear(perform: {
-                    //                        if (!Universals.firstLoad) {
-                    //                            print("Exclusions: \(criteria.excludedSeries)")
-                    //                            dataSource.refilterItems(with: Universals.criteria)
-                    //                        } else {
-                    //                            Universals.firstLoad = false
-                    //                        }
-                    //
-                    //                    })
                 )
                 .navigationTitle("Best Flips")
                 .task(priority: .high) {
@@ -228,7 +212,6 @@ struct ContentView: View {
                     }
                 }
         }
-        //.environmentObject(criteria)
     }
     
     private var refreshButton: some View {
