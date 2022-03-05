@@ -13,7 +13,7 @@
 		8635C98D278991E30023564F /* PlayerDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8635C98C278991E30023564F /* PlayerDataController.swift */; };
 		863EB27A278EA3940008C677 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = 863EB279278EA3940008C677 /* SwiftUICharts */; };
 		864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */; };
-		864207422782A65B0045FA10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207412782A65B0045FA10 /* ContentView.swift */; };
+		864207422782A65B0045FA10 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207412782A65B0045FA10 /* HomeView.swift */; };
 		864207442782A65C0045FA10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207432782A65C0045FA10 /* Assets.xcassets */; };
 		864207472782A65C0045FA10 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207462782A65C0045FA10 /* Preview Assets.xcassets */; };
 		8642074E2782A67E0045FA10 /* CriteriaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642074D2782A67E0045FA10 /* CriteriaController.swift */; };
@@ -35,7 +35,7 @@
 		8635C98C278991E30023564F /* PlayerDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataController.swift; sourceTree = "<group>"; };
 		8642073C2782A65B0045FA10 /* MLB The Show Flips.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MLB The Show Flips.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLB_The_Show_FlipsApp.swift; sourceTree = "<group>"; };
-		864207412782A65B0045FA10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		864207412782A65B0045FA10 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		864207432782A65C0045FA10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		864207462782A65C0045FA10 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8642074D2782A67E0045FA10 /* CriteriaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaController.swift; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */,
-				864207412782A65B0045FA10 /* ContentView.swift */,
+				864207412782A65B0045FA10 /* HomeView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -220,7 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				864207422782A65B0045FA10 /* ContentView.swift in Sources */,
+				864207422782A65B0045FA10 /* HomeView.swift in Sources */,
 				86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */,
 				864207512782C9A80045FA10 /* Colors.swift in Sources */,
 				86420757278394A60045FA10 /* Calculator.swift in Sources */,
