@@ -9,7 +9,11 @@ import SwiftUI
 
 struct AppearanceController: View {
     
-    @Binding var gradientColors: [Color]
+    @Binding var gradientColors: [Color] {
+        didSet {
+            Colors.setColorsInStorage(colors: gradientColors)
+        }
+    }
     
     var body: some View {
         LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
@@ -25,6 +29,9 @@ struct AppearanceController: View {
                         .scaleEffect(1.2)
                     
                 }
+                    .onDisappear(perform: {
+                        Colors.setColorsInStorage(colors: gradientColors)
+                    })
             )
     }
     

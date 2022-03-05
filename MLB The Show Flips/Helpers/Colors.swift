@@ -7,6 +7,36 @@
 
 import SwiftUI
 
+extension UserDefaults {
+    func colorForKey(key: String) -> UIColor? {
+        var colorReturnded: UIColor?
+        if let colorData = data(forKey: key) {
+            do {
+                if let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorData) as? UIColor {
+                    colorReturnded = color
+                }
+            } catch {
+                print("Error UserDefaults: \(error.localizedDescription)")
+            }
+        }
+        return colorReturnded
+    }
+    
+    func setColor(color: UIColor?, forKey key: String) {
+        var colorData: NSData?
+        if let color = color {
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false) as NSData?
+                colorData = data
+            } catch {
+                print("Error UserDefaults: \(error.localizedDescription)")
+            }
+        }
+        set(colorData, forKey: key)
+        print("\(String(describing: color?.accessibilityName)) was stored locally")
+    }
+}
+
 internal enum Colors {
     //MARK: - Custom Colors
     static var darkGray:Color {
@@ -49,9 +79,51 @@ internal enum Colors {
         return Color(hexValue: 0xB80000)
     }
     
+    private static let FIRST_COLOR_KEY = "COLOR1"
+    private static let SECOND_COLOR_KEY = "COLOR2"
+    private static let defaults = UserDefaults.standard
+    
+    static private func areColorsStoredLocally() -> Bool {
+        let stored:Bool = (defaults.colorForKey(key: FIRST_COLOR_KEY) != nil || defaults.colorForKey(key: SECOND_COLOR_KEY) != nil)
+        print("Colors Stored: \(stored)")
+        return stored
+    }
+    
+    static func setColorsInStorage(colors: [Color]) {
+        //print(defaults.description)
+        if colors.count >= 2 {
+            defaults.setColor(color: UIColor(colors.first!), forKey: FIRST_COLOR_KEY)
+            defaults.setColor(color: UIColor(colors.last!), forKey: SECOND_COLOR_KEY)
+        }
+    }
+    
+    private static let defaultViewColors:[Color] = [.teal, .blue]
+
     
     //MARK: - Color Arrays
     static var backgroundGradientColors: [Color]  {
-        return [.teal, .blue]
+        if (areColorsStoredLocally()) {
+            var foundColors: [Color] = []
+            
+            if let firstColor = defaults.colorForKey(key: FIRST_COLOR_KEY) {
+                foundColors.append(Color(firstColor))
+                print("***FOUND FIRST COLOR")
+            } else {
+                print("***COULD NOT FIND FIRST COLOR***")
+            }
+            
+            if let secondColor = defaults.colorForKey(key: SECOND_COLOR_KEY) {
+                foundColors.append(Color(secondColor))
+                print("***FOUND SECOND COLOR")
+            } else {
+                print("***COULD NOT FIND SECOND COLOR***")
+            }
+            
+            return foundColors.count == 2 ? foundColors : defaultViewColors
+        } else {
+            setColorsInStorage(colors: defaultViewColors)
+            return defaultViewColors
+        }
+        
     }
 }

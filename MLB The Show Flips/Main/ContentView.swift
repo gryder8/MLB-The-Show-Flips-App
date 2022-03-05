@@ -183,6 +183,7 @@ struct ContentView: View {
                                 HStack(spacing: 3) {
                                     Text("Budget Per Card: \(Criteria.shared.budget)")
                                         .padding(.vertical, 10)
+                                        .font(.system(size: 30, design: .rounded))
                                     StubSymbol()
                                 }
                                 LazyVStack {
