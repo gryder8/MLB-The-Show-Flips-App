@@ -13,7 +13,7 @@
 		8635C98D278991E30023564F /* PlayerDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8635C98C278991E30023564F /* PlayerDataController.swift */; };
 		863EB27A278EA3940008C677 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = 863EB279278EA3940008C677 /* SwiftUICharts */; };
 		864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */; };
-		864207422782A65B0045FA10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207412782A65B0045FA10 /* ContentView.swift */; };
+		864207422782A65B0045FA10 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207412782A65B0045FA10 /* HomeView.swift */; };
 		864207442782A65C0045FA10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207432782A65C0045FA10 /* Assets.xcassets */; };
 		864207472782A65C0045FA10 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 864207462782A65C0045FA10 /* Preview Assets.xcassets */; };
 		8642074E2782A67E0045FA10 /* CriteriaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642074D2782A67E0045FA10 /* CriteriaController.swift */; };
@@ -22,7 +22,6 @@
 		864207552783943A0045FA10 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207542783943A0045FA10 /* DataStructs.swift */; };
 		86420757278394A60045FA10 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420756278394A60045FA10 /* Calculator.swift */; };
 		86420759278395790045FA10 /* Criteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420758278395790045FA10 /* Criteria.swift */; };
-		8642075D2783A3200045FA10 /* testView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642075C2783A3200045FA10 /* testView.swift */; };
 		86BEEA1E278D4CBA005A8C02 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */; };
 		86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusion.swift */; };
 		86D861952785057400807F4E /* PlayerDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* PlayerDataModel.swift */; };
@@ -35,7 +34,7 @@
 		8635C98C278991E30023564F /* PlayerDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataController.swift; sourceTree = "<group>"; };
 		8642073C2782A65B0045FA10 /* MLB The Show Flips.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MLB The Show Flips.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLB_The_Show_FlipsApp.swift; sourceTree = "<group>"; };
-		864207412782A65B0045FA10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		864207412782A65B0045FA10 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		864207432782A65C0045FA10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		864207462782A65C0045FA10 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8642074D2782A67E0045FA10 /* CriteriaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaController.swift; sourceTree = "<group>"; };
@@ -44,7 +43,6 @@
 		864207542783943A0045FA10 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructs.swift; sourceTree = "<group>"; };
 		86420756278394A60045FA10 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		86420758278395790045FA10 /* Criteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Criteria.swift; sourceTree = "<group>"; };
-		8642075C2783A3200045FA10 /* testView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testView.swift; sourceTree = "<group>"; };
 		86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		86D861912783FCD400807F4E /* SeriesExclusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusion.swift; sourceTree = "<group>"; };
 		86D861942785057400807F4E /* PlayerDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataModel.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 				86C2DF7E2786AA780010A28D /* Model */,
 				86C2DF7C2786AA370010A28D /* Helpers */,
 				864207432782A65C0045FA10 /* Assets.xcassets */,
-				8642075C2783A3200045FA10 /* testView.swift */,
 				864207452782A65C0045FA10 /* Preview Content */,
 			);
 			path = "MLB The Show Flips";
@@ -138,7 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */,
-				864207412782A65B0045FA10 /* ContentView.swift */,
+				864207412782A65B0045FA10 /* HomeView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -220,7 +217,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				864207422782A65B0045FA10 /* ContentView.swift in Sources */,
+				864207422782A65B0045FA10 /* HomeView.swift in Sources */,
 				86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */,
 				864207512782C9A80045FA10 /* Colors.swift in Sources */,
 				86420757278394A60045FA10 /* Calculator.swift in Sources */,
@@ -228,7 +225,6 @@
 				860037F72788112C00124EA9 /* AppearanceController.swift in Sources */,
 				86420759278395790045FA10 /* Criteria.swift in Sources */,
 				860037F92788393000124EA9 /* PremadeViews.swift in Sources */,
-				8642075D2783A3200045FA10 /* testView.swift in Sources */,
 				86D861952785057400807F4E /* PlayerDataModel.swift in Sources */,
 				8635C98D278991E30023564F /* PlayerDataController.swift in Sources */,
 				8642074E2782A67E0045FA10 /* CriteriaController.swift in Sources */,

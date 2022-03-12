@@ -38,6 +38,36 @@ extension UserDefaults {
     }
 }
 
+extension UserDefaults {
+    func colorForKey(key: String) -> UIColor? {
+        var colorReturnded: UIColor?
+        if let colorData = data(forKey: key) {
+            do {
+                if let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorData) as? UIColor {
+                    colorReturnded = color
+                }
+            } catch {
+                print("Error UserDefaults: \(error.localizedDescription)")
+            }
+        }
+        return colorReturnded
+    }
+    
+    func setColor(color: UIColor?, forKey key: String) {
+        var colorData: NSData?
+        if let color = color {
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false) as NSData?
+                colorData = data
+            } catch {
+                print("Error UserDefaults: \(error.localizedDescription)")
+            }
+        }
+        set(colorData, forKey: key)
+        print("\(String(describing: color?.accessibilityName)) was stored locally")
+    }
+}
+
 internal enum Colors {
     //MARK: - Custom Colors
     static var darkGray:Color {

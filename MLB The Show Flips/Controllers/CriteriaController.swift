@@ -10,25 +10,13 @@ import Combine
 
 struct CriteriaController: View {
     
-    //@ObservedObject var dataSource: ContentDataSource
-    
-    
     @Binding var gradientColors: [Color]
-    
-    //@EnvironmentObject var criteria:Criteria
-    
     @State var minProfit = String(Criteria.initProfit)
-    
-    
     @FocusState private var minProfitFocused: Bool
     @FocusState private var budgetFocused: Bool
-    
     @State var budget = String(Criteria.initBudget)
-    
     @ObservedObject var dataController: PlayerDataController
-    
-    let startPage = Criteria.startPage
-    
+        
     @State var endPage = 3 {
         didSet  {
             Criteria.shared.endPage = self.endPage
@@ -69,7 +57,7 @@ struct CriteriaController: View {
                                     .onReceive(Just(minProfit)) { newValue in
                                         let filtered = newValue.filter { "0123456789".contains($0) }
                                         if filtered != newValue {
-                                            self.minProfit = filtered
+                                            minProfit = filtered
                                         }
                                     }
                                     .focused($minProfitFocused)
@@ -159,12 +147,6 @@ struct CriteriaController: View {
                             }
                             
                         }.padding(.horizontal, leftEdge)
-                        
-//                        Stepper("Ending marketplace page: \(endPage)", onIncrement: {
-//                            endPage = min(Criteria.shared.endPage, endPage+1)
-//                        }, onDecrement: {
-//                            endPage = max(Criteria.startPage, endPage-1)
-//                        }).padding(.horizontal, leftEdge)
                         
                         excludeSeriesButton
                             .padding(.leading, leftEdge-5)
