@@ -22,7 +22,7 @@ let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", b
 
 struct MainListContentRow: View {
     
-    @StateObject var playerModel: PlayerDataModel
+    @StateObject var playerModel: PlayerDataModel //this object drives the state of the view, we "own" it
     
     var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
@@ -44,7 +44,6 @@ struct MainListContentRow: View {
                     }
                 })
             let text = calc.playerFlipDescription(playerModel).title
-            //let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
                 NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradColors: self.gradColors))
                     .simultaneousGesture(TapGesture().onEnded({

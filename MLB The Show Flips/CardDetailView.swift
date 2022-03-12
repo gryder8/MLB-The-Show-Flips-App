@@ -16,7 +16,8 @@ import SwiftUICharts
 struct CardDetailView: View {
     let urlBaseString = "https://mlb21.theshow.com/items/"
     let calc:Calculator = Calculator()
-    @ObservedObject var playerModel: PlayerDataModel
+    @ObservedObject var playerModel: PlayerDataModel //since we want to be able to refresh, we want to observe the changes to this object
+    //note that we don't own this object so we use @ObservedObject and not @StateObject
     @Binding var gradientColors: [Color]
     
     
@@ -52,6 +53,7 @@ struct CardDetailView: View {
                         VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
                             
                             playerModel.image
+                            
                             Text(playerModel.name)
                                 .foregroundColor(.black)
                                 .font(.system(size: 22))

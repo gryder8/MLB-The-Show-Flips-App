@@ -30,7 +30,7 @@ class Calculator {
         } else if (val < 0) {
             return "-"
         } else {
-            return ""
+            return "" //==0
         }
     }
     
@@ -54,7 +54,7 @@ class Calculator {
         
         
         let firstDate: Date = dateFormatter.date(from: mostRecent!.date) ?? Date()
-        let lastDate: Date = dateFormatter.date(from: last!.date) ?? Date()
+        let lastDate: Date = dateFormatter.date(from: last!.date) ?? Date().addingTimeInterval(-172800.0) //back 48 hours
         let diffInMinutes = ((firstDate.timeIntervalSinceReferenceDate - lastDate.timeIntervalSinceReferenceDate) / 60).rounded()
         return (Double(completedOrders.count) / diffInMinutes).round(to: 2)
     }

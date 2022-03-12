@@ -13,14 +13,11 @@ class Criteria {
     var budget = 45000
     static let initBudget = 45000
     static let startPage = 1
-    var endPage = 5
-    let maxCardsAtOnce = 30 //should be able to load everything in the page
     var excludedSeries:[String] = []
     
     static var shared = Criteria() //singleton
     
     func meetsFlippingCriteria(_ playerModel: inout PlayerDataModel) -> Bool {
-        //let playerItem = player.item
         if (playerModel.best_buy_price > self.budget || self.excludedSeries.contains(playerModel.series)) {
             return false
         }

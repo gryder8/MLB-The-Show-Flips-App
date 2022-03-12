@@ -16,12 +16,6 @@ struct CriteriaController: View {
     @FocusState private var budgetFocused: Bool
     @State var budget = String(Criteria.initBudget)
     @ObservedObject var dataController: PlayerDataController
-        
-    @State var endPage = 3 {
-        didSet  {
-            Criteria.shared.endPage = self.endPage
-        }
-    }
     
     
     @State var excludedSeries:[String] = [] {
@@ -42,7 +36,6 @@ struct CriteriaController: View {
     
     
     var body: some View {
-        
         LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay(

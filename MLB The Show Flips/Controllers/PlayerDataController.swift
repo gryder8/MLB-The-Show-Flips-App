@@ -33,7 +33,6 @@ class PlayerDataController:ObservableObject {
     
     func reset() {
         isFullyLoaded = false
-//        allItems.removeAll()
         itemsForDisplay.removeAll()
         lastPageLoaded = 0
         pctComplete = 0.0
@@ -49,13 +48,15 @@ class PlayerDataController:ObservableObject {
         }
     }
     
-    
+    /**
+     Gets the next page from the API, caching images of each as needed
+     */
     func cacheSequentialPage(fromRefresh: Bool = false) async {
         if (fromRefresh) {
             currentSequentialPage = 1
         }
         print("Curr page in sequential cache: \(currentSequentialPage)")
-        if (currentSequentialPage > totalPages || currentSequentialPage > Criteria.shared.endPage) {
+        if (currentSequentialPage > totalPages) {
             return
         }
         
@@ -77,6 +78,7 @@ class PlayerDataController:ObservableObject {
                 totalPages = page.total_pages
             }
             
+            //use a task group to create a bunch of tasks for fetching the images
             await withTaskGroup(of: Image.self, body: { group in
                 for listing in page.listings { //improved performance a little
                     let itm = listing.item
@@ -89,19 +91,19 @@ class PlayerDataController:ObservableObject {
                         return await myModel.getImageForModel()
                     })
                     
+                    
                     if (allItems.keys.contains(newPlayerDataModel.uuid)) { //migrate the old image if we have it (no need to refresh this)
-                        if let alreadyStoredItem = allItems[newPlayerDataModel.uuid] {
-                            if (alreadyStoredItem.hasCachedImage) {
-                                newPlayerDataModel.image = alreadyStoredItem.image
-                                newPlayerDataModel.hasCachedImage = true
-                            }
+                        if let alreadyStoredItem = allItems[newPlayerDataModel.uuid], alreadyStoredItem.hasCachedImage {
+                            newPlayerDataModel.image = alreadyStoredItem.image
+                            newPlayerDataModel.hasCachedImage = true
                         }
                     }
                     
                     //use async
                     for await myImage in group { //synchronous
                         if Task.isCancelled { break }
-                        if (!newPlayerDataModel.hasCachedImage) {
+                        //I'm caching everything, that way if the user changes their criteria we have the images already
+                        if (!newPlayerDataModel.hasCachedImage) { // && criteria.meetsFlippingCriteria(&newPlayerDataModel) [for only caching images of valid models]
                             newPlayerDataModel.cacheImage(myImage)
                         }
                         //print("Added image for \(playerDataModel.name)")
@@ -123,38 +125,47 @@ class PlayerDataController:ObservableObject {
             isLoading = false
             
         } catch {
-            print("***Error caching page: \(error.localizedDescription)")
+            print("***Error caching page: \(error)")
         }
 
     }
     
-   
+   /**
+    Sorts the player models from a given page
+    */
     func sortedModelsForPage(_ pageNum: Int) {
         var validModelsForPage = getValidPlayersForPage(pageNum)
         return validModelsForPage.sort(by: {calc.flipProfit($0) > calc.flipProfit($1)})
     }
     
+    /**
+     Gets all the valid models
+     */
     func sortedModels() -> [PlayerDataModel] {
         var allValidModels = getValidPlayers()
-        allValidModels.sort(by: {calc.flipProfit($0) > calc.flipProfit($1)}) //in place
-        if (!allItems.isEmpty) {
-
-        }
+        allValidModels.sort(by: { itemA, itemB in calc.flipProfit(itemA) > calc.flipProfit(itemB)}) //in place
         return allValidModels
     }
     
+    /**
+     Removes items gotten from the specified page in the API
+     */
     func uncacheForPage(_ invalidationPageNum: Int) {
         allItems = allItems.filter { pair in //removes all values in the dict that don't satisfy this predicate
             pair.value.page != invalidationPageNum
         }
     }
     
+    /**
+     Clears all!
+     */
     func uncacheAll() {
         allItems.removeAll()
+        itemsForDisplay.removeAll()
     }
     
     func getValidPlayersForPage(_ pageNum: Int) -> [PlayerDataModel] {
-        let allModels:[PlayerDataModel] = allItems.values.filter {value in value.page == pageNum} //create a collection from the dict values where all the items are tuples where the int matches the page num, then map the models from the tuples into an array of data model
+        let allModels:[PlayerDataModel] = allItems.values.filter {value in value.page == pageNum} //get all models from the given page
         let validModels = allModels.filter { player in
             var mutablePlayer = player
             return criteria.meetsFlippingCriteria(&mutablePlayer)
@@ -166,7 +177,7 @@ class PlayerDataController:ObservableObject {
     }
     
     func getValidPlayers() -> [PlayerDataModel] {
-        let allModels:[PlayerDataModel] = itemsForDisplay.values.map { $0 }
+        let allModels:[PlayerDataModel] = itemsForDisplay.values.map { $0 } //map the models from the dict (the values) into an array
         return allModels.filter { model in
             return calc.flipProfit(model) >= Criteria.shared.minProfit && model.best_buy_price <= Criteria.shared.budget
         }
