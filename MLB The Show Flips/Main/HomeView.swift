@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-//TODO: Add local data storage and test filters a little more
-
-class ContentViewModel: ObservableObject {
-    
-    @Published var isFetching = false
-    @Published var playerListings = [PlayerListing]()
-    
-    @Published var errorMessage = ""
-}
-
-
 
 struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     func makeBody(configuration: Configuration) -> some View {

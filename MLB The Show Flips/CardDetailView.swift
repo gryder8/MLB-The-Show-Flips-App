@@ -14,27 +14,13 @@ import SwiftUICharts
 //use initial observable model approach to load item data into the view
 
 struct CardDetailView: View {
-    
-    
-    //@ObservedObject var itemDataSource: ItemDataSource
-    
     let urlBaseString = "https://mlb21.theshow.com/items/"
-    
-    //let url: URL
-    @Binding var playerModel: PlayerDataModel
-    //var playerItem: PlayerItem
-    //let playerListing: PlayerListing
     let calc:Calculator = Calculator()
+    @Binding var playerModel: PlayerDataModel
     @Binding var gradientColors: [Color]
+
     
     init(playerModel: PlayerDataModel, gradColors: [Color]) {
-        //        self.playerListing = playerListing
-        //        self.playerItem = playerListing.item
-        //        self.url = playerListing.item.img
-        //        Task.init {
-        //            await playerModel.cacheMarketTransactionData()
-        //            //await playerModel.cacheImage()
-        //        }
         _playerModel = Binding.constant(playerModel)
         _gradientColors = Binding.constant(gradColors)
     }
@@ -56,9 +42,6 @@ struct CardDetailView: View {
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 ScrollView {
-                    //let marketListing = itemDataSource.marketListing
-                    //let playerListing = itemDataSource.marketListing.playerListing
-                    //let playerItem = itemDataSource.marketListing.playerListing.item
                     if (playerModel.isFetching) {
                         ProgressView()
                             .progressViewStyle(DarkBlueShadowProgressViewStyle())
@@ -69,9 +52,6 @@ struct CardDetailView: View {
                         VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
                             
                             playerModel.image
-                            
-                            //Text(marketListing.completed_orders[0].date)
-                            
                             Text(playerModel.name)
                                 .foregroundColor(.black)
                                 .font(.system(size: 22))
@@ -79,7 +59,6 @@ struct CardDetailView: View {
                             Text(calc.playerFlipDescription(self.playerModel).1)
                                 .foregroundColor(Colors.darkGray)
                                 .font(.system(size: 16))
-                            
                         }
                         
                         BuySellProfit(model: playerModel)
@@ -106,7 +85,6 @@ struct BuySellProfit: View {
     
     let playerModel: PlayerDataModel
     let calc: Calculator = Calculator()
-    
     
     init (model: PlayerDataModel) {
         self.playerModel = model

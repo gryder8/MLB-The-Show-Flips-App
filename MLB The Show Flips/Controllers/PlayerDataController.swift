@@ -16,7 +16,6 @@ import SwiftUI
 class PlayerDataController:ObservableObject {
     
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
-    //private var pagedAllItems: [Int: PlayerDataModel] = [:] //to get  all items on a page, flatten to array using compact map
     @Published public var itemsForDisplay: [String: PlayerDataModel] = [:]
 
     
@@ -50,51 +49,6 @@ class PlayerDataController:ObservableObject {
         }
     }
     
-    /*
-    func cachePage(_ pageNum: Int) async {
-        if (pageNum > Criteria.shared.endPage || pageNum > totalPages) {
-            return
-        }
-        
-        let pageURL = URL(string: "\(pageBaseURL)\(pageNum)")!
-        
-        do {
-            isLoading = true
-            let (data, response) = try await URLSession.shared.data(from: pageURL)
-            
-            if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                print("Failed to reach API due to status code: \(resp.statusCode)")
-                return
-            }
-            
-            let page = try JSONDecoder().decode(Page.self, from: data)
-            
-            if (totalPages != page.total_pages) { //update if needed
-                totalPages = page.total_pages
-            }
-            
-            for listing in page.listings {
-                let itm = listing.item
-                var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-                await playerDataModel.getImageForModel()
-                
-                if (criteria.meetsFlippingCriteria(&playerDataModel)) {
-                    itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
-                }
-                
-                allItems.updateValue(playerDataModel, forKey: itm.uuid)
-                //pagedAllItems.updateValue(playerDataModel, forKey: page.page)
-            }
-            
-            lastPageLoaded = page.page
-            pctComplete = Double(lastPageLoaded) / Double(totalPages)
-            isLoading = false
-            
-        } catch {
-            print("***Error caching page: \(error.localizedDescription)")
-        }
-    }
-     */
     
     func cacheSequentialPage(fromRefresh: Bool = false) async {
         if (fromRefresh) {
@@ -130,10 +84,12 @@ class PlayerDataController:ObservableObject {
                     let myModel = playerDataModel //pointer to the val which we use as basis for call the function within the call group
                     
                     print("Adding image for \(myModel.name)...")
+                    //add the task to get the image to the group
                     group.addTask(priority: .high, operation: {
                         return await myModel.getImageForModel()
                     })
                     
+                    //use async
                     for await myImage in group { //synchronous
                         if Task.isCancelled { break }
                         playerDataModel.cacheImage(myImage)
@@ -171,7 +127,7 @@ class PlayerDataController:ObservableObject {
         var allValidModels = getValidPlayers()
         allValidModels.sort(by: {calc.flipProfit($0) > calc.flipProfit($1)}) //in place
         if (!allItems.isEmpty) {
-            //print("Returned \(allValidModels.count) cards. \(((Double(allValidModels.count) / Double(allItems.count)) * 100.0).rounded())% of cards were returned")
+
         }
         return allValidModels
     }

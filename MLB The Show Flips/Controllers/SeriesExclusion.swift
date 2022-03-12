@@ -8,9 +8,7 @@
 import SwiftUI
 
 
-//let enabledGradientColors:[Color] = [Colors.pastelGreen, Colors.glacier]
 let enabledGradient = LinearGradient(colors: [Colors.pastelGreen, Colors.glacier], startPoint: .leading, endPoint: .trailing)
-//let disabledGradientColors:[Color] = [Colors.darkRed, Colors.glacier]
 let disabledGradient = LinearGradient(colors: [Colors.darkRed, Colors.glacier], startPoint: .leading, endPoint: .trailing)
 
 
@@ -19,7 +17,6 @@ struct SeriesExclusion: View {
     @Binding var gradColors: [Color]
     @State private var selection: Set<String> = Set<String>()
     @ObservedObject var playerDataController: PlayerDataController
-    //@EnvironmentObject var criteria:Criteria
     
     
     init(gradColors: [Color], dataController dc: PlayerDataController) {
@@ -30,9 +27,6 @@ struct SeriesExclusion: View {
         
         _gradColors = Binding.constant(gradColors)
         _playerDataController = ObservedObject.init(initialValue: dc)
-        
-        //UINavigationBar.appearance().standardAppearance
-        //print(criteria.excludedSeries)
     }
     
     
@@ -91,17 +85,9 @@ struct SeriesExclusion: View {
                     })
                     .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)
-//                    .toolbar{
-//                        ToolbarItem(placement: .navigationBarTrailing) {
-//                            EditButton()
-//                                .scaleEffect(1.1)
-//                        }
-//                    }
-                    
                 }
                     .navigationBarTitle(Text("Exclude Card Series"), displayMode: .inline)
                     .foregroundColor(.black)
-                //.navigationBar
             )
     }
 }
