@@ -33,7 +33,7 @@ let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", b
 
 struct MainListContentRow: View {
     
-    @ObservedObject var playerModel: PlayerDataModel
+    @StateObject var playerModel: PlayerDataModel
     //    var playerListing: PlayerListing
     //    var playerItem:PlayerItem
     
@@ -42,7 +42,7 @@ struct MainListContentRow: View {
     
     init (model: PlayerDataModel, gradColors: [Color]) {
         self.gradColors = gradColors
-        _playerModel = ObservedObject.init(initialValue: model)
+        _playerModel = StateObject(wrappedValue: model)
     }
     
     var body: some View {
