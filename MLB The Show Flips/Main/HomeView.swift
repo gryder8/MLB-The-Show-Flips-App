@@ -24,13 +24,13 @@ struct MainListContentRow: View {
     
     @StateObject var playerModel: PlayerDataModel //this object drives the state of the view, we "own" it
     
-    var gradColors: [Color]
+    @Binding var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
     
-    init (model: PlayerDataModel, gradColors: [Color]) {
-        self.gradColors = gradColors
-        _playerModel = StateObject(wrappedValue: model)
-    }
+//    init (model: PlayerDataModel, gradColors: [Color]) {
+//        self.gradColors = gradColors
+//        _playerModel = StateObject(wrappedValue: model)
+//    }
     
     var body: some View {
         let calc = Calculator()
@@ -45,7 +45,7 @@ struct MainListContentRow: View {
                 })
             let text = calc.playerFlipDescription(playerModel).title
             HStack (spacing: 0){
-                NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradColors: self.gradColors))
+                NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradientColors: self.$gradColors))
                     .simultaneousGesture(TapGesture().onEnded({
                         Task.init {
                             async let marketData =  playerModel.getMarketDataForModel()
@@ -136,7 +136,7 @@ struct ContentView: View {
                             LazyVStack {
                                 ForEach(playerDataController.sortedModels()) { playerModel in
                                     //let playerItem = playerModel.item
-                                    MainListContentRow(model: playerModel, gradColors: gradientColors)
+                                    MainListContentRow(playerModel: playerModel, gradColors: $gradientColors)
                                         .onAppear {
                                             ContentView.hasInitialized = true
                                             //dataSource.setCriteria(new: self.criteria)

@@ -11,21 +11,25 @@ import SwiftUICharts
 //https://github.com/AppPear/ChartView/
 //https://github.com/aunnnn/MovingNumbersView
 
-//use initial observable model approach to load item data into the view
-
+/**
+ Detail view for each card shown when the name is tapped
+ */
 struct CardDetailView: View {
-    let urlBaseString = "https://mlb21.theshow.com/items/"
-    let calc:Calculator = Calculator()
+    private let urlBaseString = "https://mlb21.theshow.com/items/"
+    private let calc:Calculator = Calculator()
     @ObservedObject var playerModel: PlayerDataModel //since we want to be able to refresh, we want to observe the changes to this object
     //note that we don't own this object so we use @ObservedObject and not @StateObject
     @Binding var gradientColors: [Color]
     
     
-    init(playerModel: PlayerDataModel, gradColors: [Color]) {
-        _playerModel = ObservedObject.init(initialValue: playerModel)
-        _gradientColors = Binding.constant(gradColors)
-    }
+//    init(playerModel: PlayerDataModel, gradientColors: [Color]) {
+//        _playerModel = ObservedObject.init(initialValue: playerModel)
+//        _gradientColors = Binding.constant(gradientColors)
+//    }
     
+    /**
+     Link Button
+     */
     private var goToWebLink: some View {
         RoundedRectangle(cornerRadius: 8, style: .circular)
             .frame(width: 200, height: 40)
@@ -71,7 +75,7 @@ struct CardDetailView: View {
                         let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
                         let rates  = calc.getRates(priceHistory: playerModel.price_history)
                         let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
-                        Text("48 Hour Trends")
+                        Text("Recent Trends")
                             .font(.system(size: 20, weight: .light, design: .rounded))
                             .underline()
                             .padding(.bottom, 0)
@@ -83,13 +87,16 @@ struct CardDetailView: View {
                         
                     }
                 }
-                    .toolbar {
+                    .toolbar { //refresh button is in toolbar
                         refreshButton
                     }
                     
             )
     }
     
+    /**
+     Button to go fetch new market data
+     */
     var refreshButton: some View {
         Button {
             playerModel.hasCachedTransactions = false
@@ -105,6 +112,9 @@ struct CardDetailView: View {
         }
     }
     
+    /**
+     Buy/Sell --> profit view
+     */
     struct BuySellProfit: View {
         
         let playerModel: PlayerDataModel
@@ -133,10 +143,10 @@ struct CardDetailView: View {
     struct CardDetailView_Previews: PreviewProvider {
         static let testImgURL: URL = URL(string: "https://mlb21.theshow.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczVzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a63051376496444a959d408eeb385c660d229548/e53423a698b7afe59590c90a70cd448d.jpg")!
         static let testModel = PlayerDataModel(name: "Test", uuid: "6a76035cf22f0d598e3d66f610d77867", bestBuy: 3000, bestSell: 9000, ovr: 99, year: 2021, shortPos: "TP", team: "Test Team", series: "Testing", imgURL: testImgURL, fromPage: 1)
-        static var testColors: [Color] = [.orange, .black]
+        @State static var testColors: [Color] = [.orange, .black]
         static var previews: some View {
             
-            CardDetailView(playerModel: testModel, gradColors: testColors).onAppear(perform: {
+            CardDetailView(playerModel: testModel, gradientColors: $testColors).onAppear(perform: {
                 testModel.image = Image(systemName: "photo")
             })
         }

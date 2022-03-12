@@ -17,6 +17,9 @@ extension Double {
 
 class Calculator {
     
+    /**
+     Calculate the profit of flipping the given card, represented by the data model
+     */
     func flipProfit(_ playerModel: PlayerDataModel) -> Int {
         let buyActual:Double = Double(playerModel.best_buy_price + 1)
         let sellActual:Double = Double(playerModel.best_sell_price - 1) * 0.9
@@ -34,6 +37,9 @@ class Calculator {
         }
     }
     
+    /**
+     Returns a tuple comprising of the title that should be shown for that player and the description for that player
+     */
     func playerFlipDescription(_ playerModel: PlayerDataModel) -> (title: String, desc: String) {
         //let playerItem = playerModel.item
         let flipVal = flipProfit(playerModel)
@@ -42,6 +48,9 @@ class Calculator {
         return (nameAndFlipMargin, desc)
     }
     
+    /**
+     Calculates the transactions per minute given 
+     */
     func transactionsPerMinute(completedOrders: [CompletedOrder]) -> Double {
         let dateFormatter = DateFormatter()
 
