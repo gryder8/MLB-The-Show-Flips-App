@@ -16,17 +16,6 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     }
 }
 
-struct CustomDivider: View {
-    let color: Color = .gray
-    let width: CGFloat = 1.2
-    var body: some View {
-        Rectangle()
-            .fill(.black)
-            .frame(height: width)
-            .edgesIgnoringSafeArea(.horizontal)
-    }
-}
-
 //let playerDataController = PlayerDataController()
 let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
@@ -46,18 +35,6 @@ struct MainListContentRow: View {
     var body: some View {
         let calc = Calculator()
         VStack {
-<<<<<<< HEAD:MLB The Show Flips/Main/ContentView.swift
-            CustomDivider()
-//            playerModel.image
-//                .onAppear(perform: {
-//                    if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
-//                        Task.init {
-//                            await playerModel.getImageForModel()
-//                        }
-//                    }
-//                })
-//
-=======
             playerModel.image
                 .onAppear(perform: {
                     if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
@@ -66,7 +43,6 @@ struct MainListContentRow: View {
                         }
                     }
                 })
->>>>>>> images:MLB The Show Flips/Main/HomeView.swift
             let text = calc.playerFlipDescription(playerModel).title
             //let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
@@ -80,23 +56,18 @@ struct MainListContentRow: View {
                         }
                     }))
                     .foregroundColor(.black)
-                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .font(.system(size: 22))
                 StubSymbol()
             }.transition(.slide.animation(.easeInOut))
             Text(calc.playerFlipDescription(playerModel).desc)
                 .foregroundColor(Colors.darkGray)
-                .font(.system(size: 20, design: .rounded))
-            CustomDivider()
+                .font(.system(size: 16))
         }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
     }
 }
 
-<<<<<<< HEAD:MLB The Show Flips/Main/ContentView.swift
-@MainActor
-=======
 
 @MainActor //runs all work here on the main thread (DispatchQueue.main)
->>>>>>> images:MLB The Show Flips/Main/HomeView.swift
 struct ContentView: View {
     
     public static var hasInitialized = false
@@ -156,26 +127,6 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
                     ScrollView {
-<<<<<<< HEAD:MLB The Show Flips/Main/ContentView.swift
-                        ScrollViewReader { value in
-                            VStack {
-                                HStack(spacing: 3) {
-                                    Text("Budget Per Card: \(Criteria.shared.budget)")
-                                        .padding(.vertical, 10)
-                                        .font(.system(size: 20, design: .rounded))
-                                    StubSymbol()
-                                }
-                                LazyVStack {
-                                    ForEach(playerDataController.sortedModels()) { playerModel in
-                                        //let playerItem = playerModel.item
-                                        MainListContentRow(model: playerModel, gradColors: gradientColors)
-                                            .onAppear {
-                                                ContentView.hasInitialized = true
-                                                //dataSource.setCriteria(new: self.criteria)
-                                                if (!playerModel.cachedTransactions) {
-                                                    playerDataController.loadMoreContentIfNeeded(model: playerModel)
-                                                }
-=======
                         VStack {
                             HStack(spacing: 3) {
                                 Text("Budget Per Card: \(Criteria.shared.budget)")
@@ -192,7 +143,6 @@ struct ContentView: View {
                                             //dataSource.setCriteria(new: self.criteria)
                                             if (!playerModel.hasCachedTransactions) {
                                                 playerDataController.loadMoreContentIfNeeded(model: playerModel)
->>>>>>> images:MLB The Show Flips/Main/HomeView.swift
                                             }
                                         }
                                         .padding(.all, 30)
@@ -236,6 +186,7 @@ struct ContentView: View {
                     }
                 }
         }
+        //.environmentObject(criteria)
     }
     
     public var refreshButton: some View {

@@ -41,7 +41,6 @@ struct AppearanceController: View {
             let temp = gradientColors[0]
             gradientColors[0] = gradientColors[1]
             gradientColors[1] = temp
-            Colors.setColorsInStorage(colors: gradientColors)
         } label: {
             SmallSystemImageButton(sysName: "arrow.up.arrow.down")
             

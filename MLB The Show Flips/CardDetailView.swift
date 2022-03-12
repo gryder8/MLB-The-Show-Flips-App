@@ -14,28 +14,14 @@ import SwiftUICharts
 //use initial observable model approach to load item data into the view
 
 struct CardDetailView: View {
-    
-    
-    //@ObservedObject var itemDataSource: ItemDataSource
-    
     let urlBaseString = "https://mlb21.theshow.com/items/"
-    
-    //let url: URL
-    @Binding var playerModel: PlayerDataModel
-    //var playerItem: PlayerItem
-    //let playerListing: PlayerListing
     let calc:Calculator = Calculator()
+    @ObservedObject var playerModel: PlayerDataModel
     @Binding var gradientColors: [Color]
     
+    
     init(playerModel: PlayerDataModel, gradColors: [Color]) {
-        //        self.playerListing = playerListing
-        //        self.playerItem = playerListing.item
-        //        self.url = playerListing.item.img
-        //        Task.init {
-        //            await playerModel.cacheMarketTransactionData()
-        //            //await playerModel.cacheImage()
-        //        }
-        _playerModel = Binding.constant(playerModel)
+        _playerModel = ObservedObject.init(initialValue: playerModel)
         _gradientColors = Binding.constant(gradColors)
     }
     
@@ -56,9 +42,6 @@ struct CardDetailView: View {
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 ScrollView {
-                    //let marketListing = itemDataSource.marketListing
-                    //let playerListing = itemDataSource.marketListing.playerListing
-                    //let playerItem = itemDataSource.marketListing.playerListing.item
                     if (playerModel.isFetching) {
                         ProgressView()
                             .progressViewStyle(DarkBlueShadowProgressViewStyle())
@@ -68,17 +51,14 @@ struct CardDetailView: View {
                     VStack { //top level
                         VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
                             
-                            //playerModel.image
-                            
-                            
+                            playerModel.image
                             Text(playerModel.name)
                                 .foregroundColor(.black)
-                                .font(.system(size: 36, weight: .semibold, design: .rounded))
+                                .font(.system(size: 22))
                             
                             Text(calc.playerFlipDescription(self.playerModel).1)
                                 .foregroundColor(Colors.darkGray)
                                 .font(.system(size: 16))
-                            
                         }
                         
                         BuySellProfit(model: playerModel)
@@ -89,52 +69,74 @@ struct CardDetailView: View {
                         let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
                         let rates  = calc.getRates(priceHistory: playerModel.price_history)
                         let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
+                        Text("48 Hour Trends")
+                            .font(.system(size: 20, weight: .light, design: .rounded))
+                            .underline()
+                            .padding(.bottom, 0)
                         HStack (spacing: 10){
                             LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
                             LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
-                        }.padding(.all, 10)
-                            
+                        }.padding([.horizontal, .bottom], 10)
+                        
                         
                     }
                 }
+                    .toolbar {
+                        refreshButton
+                    }
+                    
             )
     }
-}
-
-struct BuySellProfit: View {
     
-    let playerModel: PlayerDataModel
-    let calc: Calculator = Calculator()
-    
-    
-    init (model: PlayerDataModel) {
-        self.playerModel = model
-    }
-    
-    var body: some View {
-        HStack (spacing: 15){
-            VStack {
-                StubsText(text: "Buy: \(playerModel.best_buy_price)", spacing: 3)
-                StubsText(text: "Sell: \(playerModel.best_sell_price)", spacing: 3)
+    var refreshButton: some View {
+        Button {
+            playerModel.hasCachedTransactions = false
+            print("Refreshing from DetailView")
+            Task {
+                let newData = await playerModel.getMarketDataForModel()
+                playerModel.cacheMarketData(newData)
             }
-            Image(systemName: "arrow.triangle.merge")
-                .scaleEffect(2.5)
-                .rotationEffect(Angle(degrees: 90.0))
-            let profit = calc.flipProfit(self.playerModel)
-            StubsText(text: "Profit: \(profit)", spacing: 3)
-            
+        } label: {
+            Label("Refresh", systemImage: "arrow.triangle.2.circlepath.circle")
+                .scaleEffect(1.5)
+                .foregroundColor(.black)
         }
     }
-}
-
-struct CardDetailView_Previews: PreviewProvider {
-    static let testImgURL: URL = URL(string: "https://mlb21.theshow.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczVzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a63051376496444a959d408eeb385c660d229548/e53423a698b7afe59590c90a70cd448d.jpg")!
-    static let testModel = PlayerDataModel(name: "Test", uuid: "6a76035cf22f0d598e3d66f610d77867", bestBuy: 3000, bestSell: 9000, ovr: 99, year: 2021, shortPos: "TP", team: "Test Team", series: "Testing", imgURL: testImgURL, fromPage: 1)
-    static var testColors: [Color] = [.orange, .black]
-    static var previews: some View {
+    
+    struct BuySellProfit: View {
         
-        CardDetailView(playerModel: testModel, gradColors: testColors).onAppear(perform: {
-            testModel.image = Image(systemName: "photo")
-        })
+        let playerModel: PlayerDataModel
+        let calc: Calculator = Calculator()
+        
+        init (model: PlayerDataModel) {
+            self.playerModel = model
+        }
+        
+        var body: some View {
+            HStack (spacing: 15){
+                VStack {
+                    StubsText(text: "Buy: \(playerModel.best_buy_price)", spacing: 3)
+                    StubsText(text: "Sell: \(playerModel.best_sell_price)", spacing: 3)
+                }
+                Image(systemName: "arrow.triangle.merge")
+                    .scaleEffect(2.5)
+                    .rotationEffect(Angle(degrees: 90.0))
+                let profit = calc.flipProfit(self.playerModel)
+                StubsText(text: "Profit: \(profit)", spacing: 3)
+                
+            }
+        }
+    }
+    
+    struct CardDetailView_Previews: PreviewProvider {
+        static let testImgURL: URL = URL(string: "https://mlb21.theshow.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczVzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a63051376496444a959d408eeb385c660d229548/e53423a698b7afe59590c90a70cd448d.jpg")!
+        static let testModel = PlayerDataModel(name: "Test", uuid: "6a76035cf22f0d598e3d66f610d77867", bestBuy: 3000, bestSell: 9000, ovr: 99, year: 2021, shortPos: "TP", team: "Test Team", series: "Testing", imgURL: testImgURL, fromPage: 1)
+        static var testColors: [Color] = [.orange, .black]
+        static var previews: some View {
+            
+            CardDetailView(playerModel: testModel, gradColors: testColors).onAppear(perform: {
+                testModel.image = Image(systemName: "photo")
+            })
+        }
     }
 }

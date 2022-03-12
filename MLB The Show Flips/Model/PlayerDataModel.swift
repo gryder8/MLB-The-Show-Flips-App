@@ -32,8 +32,8 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     var page: Int
     
     var isFetching = false
-    var cachedImage = false //flags so we can call fetching from init()
-    var cachedTransactions = false
+    var hasCachedImage = false //flags so we can call fetching from init()
+    var hasCachedTransactions = false
     
     let itemURLBaseString:String = "https://mlb21.theshow.com/apis/listing.json?uuid="
     
@@ -58,36 +58,39 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
     }
     
-//    public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
-//        let itemURL: URL = URL(string: "\(self.imgURL)")!
-//
-//        if (!cachedImage) {
-//            do {
-//                isFetching = true
-//                let req = URLRequest(url: itemURL)
-//                //print("Beginning async let for \(name)...")
-//                async let (data, _) = URLSession.shared.data(for: req)
-//                
-//                guard let uiImage = try await UIImage(data: data) else {
-//                    return Image(systemName: "person.crop.circle.badge.exclamationmark")
-//                }
-//                //print("UIImage processed for \(name)...")
-//
-//                return Image(uiImage: uiImage)
-//            } catch {
-//                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
-//                self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
-//                print("Fell back to default from system")
-//            }
-//        } else { //image already cached, just return what we have
-//            return self.image
-//        }
-//        return Image(systemName: "person.crop.circle.badge.exclamationmark") //fall out (error)
-//    }
+    public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
+        let itemURL: URL = URL(string: "\(self.imgURL)")!
+        
+        if (!hasCachedImage) {
+            do {
+                isFetching = true
+                let req = URLRequest(url: itemURL)
+                //print("Beginning async let for \(name)...")
+                async let (data, _) = URLSession.shared.data(for: req)
+                
+                guard let uiImage = try await UIImage(data: data) else {
+                    return Image(systemName: "person.crop.circle.badge.exclamationmark")
+                }
+                //print("UIImage processed for \(name)...")
+                
+                return Image(uiImage: uiImage)
+            } catch {
+                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
+                self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
+                print("Fell back to default from system")
+            }
+        } else { //image already cached, just return what we have
+            return self.image
+        }
+        return Image(systemName: "person.crop.circle.badge.exclamationmark") //fall out (error)
+    }
     
     func cacheImage(_ image: Image) {
-        self.image = image
-        print("*Image cached for \(self.name)*")
+        if (!hasCachedImage) {
+            self.image = image
+            print("*Image cached for \(self.name)*")
+            hasCachedImage = true
+        }
     }
     
     
@@ -98,7 +101,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         let errorPlayerItem = PlayerItem(uuid: "ERR", name: "Error", rarity: "ERR", team: "ERR", team_short_name: "ERR", img: errorImgURL, ovr: 0, series: "ERROR", display_position: "ex", series_year: 2021)
         let errorMarketListing = MarketListing(best_sell_price: 0, best_buy_price: 0, item: errorPlayerItem, price_history: [], completed_orders: [])
         
-        if (!cachedTransactions) {
+        if (!hasCachedTransactions) {
             do {
                 isFetching = true
                 let req = URLRequest(url: itemURL)
@@ -118,7 +121,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         return errorMarketListing //error
     }
     
-    public func cacheMarketDate(_ marketData: MarketListing) { //TODO: Have this only recache after a certain time has elapsed
+    public func cacheMarketData(_ marketData: MarketListing) {
         //store the date of the last cache and compare it to Date()
         self.best_buy_price = marketData.best_buy_price
         self.best_sell_price = marketData.best_sell_price
@@ -127,49 +130,13 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         self.price_history = marketData.price_history
         
         isFetching = false
-        cachedTransactions = true
         self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
         
         print("Transactions/min: \(self.transactionsPerMin)")
-        print("---TRANSACTIONS CACHED")
+        print("---TRANSACTIONS CACHED for \(marketData.item.name)")
+        self.hasCachedTransactions = true
     }
     
-    
-    
-    /*
-    public func cachePlayerListing() async { //update
-        //let itemURL: URL = URL(string: "\(itemURLBaseString+uuid)")!
-        
-        do {
-            isFetching = true
-            let (data, response) = try await URLSession.shared.data(from: imgURL)
-            
-            if let resp = response as? HTTPURLResponse, resp.statusCode >= 300 {
-                print("***Failed to reach API due to status code: \(resp.statusCode)***")
-                return
-            }
-            
-            let marketListing: MarketListing = try JSONDecoder().decode(MarketListing.self, from: data)
-            //let marketPlayerListing = marketListing.playerListing
-            let marketPlayerItem = marketListing.item
-            
-            self.best_buy_price = marketListing.best_buy_price //might as well update these too
-            self.best_sell_price = marketListing.best_sell_price
-            self.ovr = marketPlayerItem.ovr
-            self.name = marketPlayerItem.name
-            self.series = marketPlayerItem.team
-            self.shortPos = marketPlayerItem.display_position
-            self.year = marketPlayerItem.series_year
-            
-            isFetching = false
-            
-            print("---LISTING CACHED")
-            
-        } catch {
-            print("***Failed to cache market data with error: \(error.localizedDescription)")
-        }
-    }
-     */
     
     
     private func imageFromURL(_ url: URL) async -> Image {
@@ -194,68 +161,3 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         return errorImage //error
     }
 }
-
-
-
-//
-//    @discardableResult func loadMoreContentIfNeeded(currentItem item: PlayerListing?) -> Bool { //returns true if more content is needed
-//        guard let item = item else { //got to a null item, load more data!
-//            loadMoreContent()
-//            return true
-//        }
-//
-//        let thresholdIndex = items.index(items.endIndex, offsetBy: -2) //begin to refresh when you have 3 items until the end
-//
-//        if items.firstIndex(where: { anItem in anItem.id == item.id }) == thresholdIndex {
-//            loadMoreContent()
-//            return true
-//        }
-//        return false
-//    }
-//
-//    func refilterItems(with newInst: Criteria) {
-//        self.criteria = newInst
-//        let calc = Calculator(criteriaInst: newInst)
-//        items = items.filter { listing in
-//            return calc.flipProfit(listing) >= criteria.minProfit && listing.best_buy_price <= criteria.budget && !criteria.excludedSeries.contains(listing.item.series)
-//        }
-//    }
-//
-//
-//    private func loadMoreContent() {
-//        guard !isLoadingPage && canLoadMorePages else {
-//            return
-//        }
-//
-//        //let calc = Calculator()
-//        isLoadingPage = true
-//
-//        let url = URL(string: "https://mlb21.theshow.com/apis/listings.json?type=mlb_card&page=\(currentPage)")!
-//        URLSession.shared.dataTaskPublisher(for: url)
-//            .map(\.data)
-//            .decode(type: Page.self, decoder: JSONDecoder())
-//            .receive(on: DispatchQueue.main)
-//            .handleEvents(receiveOutput: { response in
-//                self.canLoadMorePages = self.currentPage < self.criteria.endPage
-//                self.isLoadingPage = false
-//                self.currentPage += 1
-//            })
-//            .map({ response in
-//                var responseListings = response.listings
-//                responseListings = responseListings.filter { listing in
-//                    var mutableListing = listing //make the listing mutable for purposes of calling the meetsCriteria method
-//                    let excluded = self.criteria.excludedSeries.contains(listing.item.series)
-//                    let valid = self.calc.meetsFlippingCriteria(&mutableListing)
-//                    let profitableEnough = self.calc.flipProfit(mutableListing) >= self.criteria.minProfit
-//                    return valid && profitableEnough && !excluded
-//                }
-//                responseListings = self.calc.sortedPlayerListings(listings: &responseListings, trim: false)
-//                self.items.append(contentsOf: responseListings)
-//                print("Result count: \(self.items.count)")
-//                return self.items
-//            })
-//            .catch({ _ in Just(self.items) })
-//                    .assign(to: &$items)
-//                    return
-//    }
-//}
