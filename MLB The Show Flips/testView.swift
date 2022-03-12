@@ -8,8 +8,48 @@
 import SwiftUI
 
 struct testView: View {
+    
+    @State var showText: Bool = false
+    @State var hasOffset: Bool = true
+    
     var body: some View {
-        Text("Hello World")
+        HStack {
+            
+            //VStack {
+//                Button("Animate") {
+//                    withAnimation(.interpolatingSpring(stiffness: 80, damping: 4))
+//                }
+            
+            VStack (spacing: 20){
+                Button(action: {
+                    withAnimation {
+                        showText.toggle()
+                    }
+                }, label: {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .frame(width: 110, height: 35, alignment: .center)
+                        Text("Toggle Field")
+                            .foregroundColor(.black)
+
+                    }
+                })
+                if (showText) {
+                    withAnimation (.interpolatingSpring(mass: 5, stiffness: 80, damping: 1, initialVelocity: 0)) {
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .foregroundColor(.orange)
+                                .frame(width: 110, height: 35, alignment: .center)
+                            Text("Dynamic")
+                                .foregroundColor(.black)
+                                .animation(.easeInOut(duration: 2), value: showText)
+                        }
+                    }
+                }
+            }
+        }
+        
     }
 }
 

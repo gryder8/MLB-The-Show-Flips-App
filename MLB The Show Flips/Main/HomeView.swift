@@ -48,25 +48,6 @@ struct MainListContentRow: View {
     var body: some View {
         let calc = Calculator()
         VStack {
-            //            AsyncImage(url: playerModel.imgURL, transaction: Transaction(animation: .easeInOut)) { phase in
-            //                switch phase {
-            //                case .empty:
-            //                    ProgressView()
-            //                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-            //                        .scaleEffect(1.5, anchor: .center)
-            //                case .success(let image):
-            //                    image
-            //                        .fixedSize(horizontal: true, vertical: true)
-            //                case .failure:
-            //                    Image(systemName: "person.crop.circle.badge.exclamationmark")
-            //                        .scaleEffect(3.5)
-            //                        .padding(.bottom, 10)
-            //                        .foregroundColor(.red)
-            //                @unknown default:
-            //                    EmptyView()
-            //                }
-            //            }
-            
             playerModel.image
                 .onAppear(perform: {
                     if (playerModel.image == Image(systemName: "photo")) { //if it appears with a defaulted image, go spin a thread to load the correct one
@@ -97,26 +78,6 @@ struct MainListContentRow: View {
     }
 }
 
-//struct CustomDivider: View {
-//    let color: Color = .black
-//    let width: CGFloat = 1.3
-//    var body: some View {
-//        Rectangle()
-//            .fill(color)
-//            .frame(height: width)
-//            .edgesIgnoringSafeArea(.horizontal)
-//    }
-//}
-
-//struct Universals: ViewModifier {
-//    static var criteria = Criteria()
-//    static var firstLoad = true
-//
-//    func body(content: Content) -> some View {
-//        content
-//            .environmentObject(Self.criteria)
-//    }
-//}
 
 //@MainActor
 struct ContentView: View {
@@ -178,48 +139,37 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
                     ScrollView {
-                        ScrollViewReader { value in
-                            VStack {
-                                HStack(spacing: 3) {
-                                    Text("Budget Per Card: \(Criteria.shared.budget)")
-                                        .padding(.vertical, 10)
-                                        .font(.system(size: 30, design: .rounded))
-                                    StubSymbol()
-                                }
-                                LazyVStack {
-                                    ForEach(playerDataController.sortedModels()) { playerModel in
-                                        //let playerItem = playerModel.item
-                                        MainListContentRow(model: playerModel, gradColors: gradientColors)
-                                            .onAppear {
-                                                ContentView.hasInitialized = true
-                                                //dataSource.setCriteria(new: self.criteria)
-                                                if (!playerModel.cachedTransactions) {
-                                                    playerDataController.loadMoreContentIfNeeded(model: playerModel)
-                                                }
+                        VStack {
+                            HStack(spacing: 3) {
+                                Text("Budget Per Card: \(Criteria.shared.budget)")
+                                    .padding(.vertical, 10)
+                                    .font(.system(size: 30, design: .rounded))
+                                StubSymbol()
+                            }
+                            LazyVStack {
+                                ForEach(playerDataController.sortedModels()) { playerModel in
+                                    //let playerItem = playerModel.item
+                                    MainListContentRow(model: playerModel, gradColors: gradientColors)
+                                        .onAppear {
+                                            ContentView.hasInitialized = true
+                                            //dataSource.setCriteria(new: self.criteria)
+                                            if (!playerModel.cachedTransactions) {
+                                                playerDataController.loadMoreContentIfNeeded(model: playerModel)
                                             }
-                                            .padding(.all, 30)
-                                    }
-                                    
-                                    
-                                    if playerDataController.isLoading {
-                                        ProgressView()
-                                            .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                                            .scaleEffect(1.5, anchor: .center)
-                                    }
-                                    
+                                        }
+                                        .padding(.all, 30)
                                 }
+                                
+                                
+                                if playerDataController.isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                                        .scaleEffect(1.5, anchor: .center)
+                                }
+                                
                             }
                         }
                     }
-                    //                        .onAppear(perform: {
-                    //                        if (!Universals.firstLoad) {
-                    //                            print("Exclusions: \(criteria.excludedSeries)")
-                    //                            dataSource.refilterItems(with: Universals.criteria)
-                    //                        } else {
-                    //                            Universals.firstLoad = false
-                    //                        }
-                    //
-                    //                    })
                 )
                 .navigationTitle("Best Flips")
                 .task(priority: .high) {

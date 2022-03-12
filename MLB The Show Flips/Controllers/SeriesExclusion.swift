@@ -38,20 +38,48 @@ struct SeriesExclusion: View {
     
     private let cardSeries:[String] = ["2021 All Star", "2021 Postseason", "2nd Half", "All-Star", "Awards", "Finest", "Future Stars", "Home Run Derby", "Live", "Milestone", "Monthly Awards", "Postseason", "Prime", "Prospect", "Rookie", "Signature", "The 42", "Topps Now", "Veteran"]
     
+    @State var searchText: String = ""
     
+    var searchResults:[String] {
+        if (searchText.isEmpty) {
+            return cardSeries
+        } else {
+            return cardSeries.filter { item in item.contains(searchText) }
+        }
+    }
+
     
     var body: some View {
+        
         LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay(
                 VStack{
-                    List(cardSeries, id: \.self, selection: $selection) { series in
+                    List(searchResults, id: \.self, selection: $selection) { series in
                         Text(series)
                             .listRowBackground(
                                 selection.contains(series) ? disabledGradient :  enabledGradient
                             )
                             .listRowSeparatorTint(.black)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button {
+                                    if (selection.contains(series)) {
+                                        selection.remove(series)
+                                    } else {
+                                        selection.insert(series)
+                                    }
+                                } label: {
+                                    if (selection.contains(series)) {
+                                        Label("Add", systemImage: "plus")
+                                    } else {
+                                        Label("Remove", systemImage: "minus")
+                                    }
+                                }
+                                .tint(selection.contains(series) ? .green : .red)
+                            }
+                            
                     }
+                    .searchable(text: $searchText, prompt: "Search")
                     .onAppear(perform: {
                         selection = Set(Criteria.shared.excludedSeries.map{$0})
                     })
@@ -63,12 +91,12 @@ struct SeriesExclusion: View {
                     })
                     .navigationTitle("Manage Series")
                     .navigationBarTitleDisplayMode(.large)
-                    .toolbar{
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            EditButton()
-                                .scaleEffect(1.1)
-                        }
-                    }
+//                    .toolbar{
+//                        ToolbarItem(placement: .navigationBarTrailing) {
+//                            EditButton()
+//                                .scaleEffect(1.1)
+//                        }
+//                    }
                     
                 }
                     .navigationBarTitle(Text("Exclude Card Series"), displayMode: .inline)

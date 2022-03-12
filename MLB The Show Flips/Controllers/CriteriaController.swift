@@ -27,7 +27,7 @@ struct CriteriaController: View {
     
     @ObservedObject var dataController: PlayerDataController
     
-    let startPage = Criteria.startPage
+    //let startPage = Criteria.startPage
     
     @State var endPage = 3 {
         didSet  {
@@ -69,7 +69,7 @@ struct CriteriaController: View {
                                     .onReceive(Just(minProfit)) { newValue in
                                         let filtered = newValue.filter { "0123456789".contains($0) }
                                         if filtered != newValue {
-                                            self.minProfit = filtered
+                                            minProfit = filtered
                                         }
                                     }
                                     .focused($minProfitFocused)
