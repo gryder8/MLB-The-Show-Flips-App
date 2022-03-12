@@ -121,7 +121,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         return errorMarketListing //error
     }
     
-    public func cacheMarketDate(_ marketData: MarketListing) {
+    public func cacheMarketData(_ marketData: MarketListing) {
         //store the date of the last cache and compare it to Date()
         self.best_buy_price = marketData.best_buy_price
         self.best_sell_price = marketData.best_sell_price

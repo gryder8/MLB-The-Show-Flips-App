@@ -22,7 +22,6 @@
 		864207552783943A0045FA10 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207542783943A0045FA10 /* DataStructs.swift */; };
 		86420757278394A60045FA10 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420756278394A60045FA10 /* Calculator.swift */; };
 		86420759278395790045FA10 /* Criteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420758278395790045FA10 /* Criteria.swift */; };
-		8642075D2783A3200045FA10 /* testView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642075C2783A3200045FA10 /* testView.swift */; };
 		86BEEA1E278D4CBA005A8C02 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */; };
 		86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusion.swift */; };
 		86D861952785057400807F4E /* PlayerDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* PlayerDataModel.swift */; };
@@ -44,7 +43,6 @@
 		864207542783943A0045FA10 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructs.swift; sourceTree = "<group>"; };
 		86420756278394A60045FA10 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		86420758278395790045FA10 /* Criteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Criteria.swift; sourceTree = "<group>"; };
-		8642075C2783A3200045FA10 /* testView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testView.swift; sourceTree = "<group>"; };
 		86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		86D861912783FCD400807F4E /* SeriesExclusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusion.swift; sourceTree = "<group>"; };
 		86D861942785057400807F4E /* PlayerDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataModel.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 				86C2DF7E2786AA780010A28D /* Model */,
 				86C2DF7C2786AA370010A28D /* Helpers */,
 				864207432782A65C0045FA10 /* Assets.xcassets */,
-				8642075C2783A3200045FA10 /* testView.swift */,
 				864207452782A65C0045FA10 /* Preview Content */,
 			);
 			path = "MLB The Show Flips";
@@ -228,7 +225,6 @@
 				860037F72788112C00124EA9 /* AppearanceController.swift in Sources */,
 				86420759278395790045FA10 /* Criteria.swift in Sources */,
 				860037F92788393000124EA9 /* PremadeViews.swift in Sources */,
-				8642075D2783A3200045FA10 /* testView.swift in Sources */,
 				86D861952785057400807F4E /* PlayerDataModel.swift in Sources */,
 				8635C98D278991E30023564F /* PlayerDataController.swift in Sources */,
 				8642074E2782A67E0045FA10 /* CriteriaController.swift in Sources */,

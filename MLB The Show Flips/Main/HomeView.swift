@@ -50,7 +50,9 @@ struct MainListContentRow: View {
                     .simultaneousGesture(TapGesture().onEnded({
                         Task.init {
                             async let marketData =  playerModel.getMarketDataForModel()
-                            await playerModel.cacheMarketDate(marketData)
+                            if (!playerModel.hasCachedTransactions) {
+                                await playerModel.cacheMarketData(marketData)
+                            }
                         }
                     }))
                     .foregroundColor(.black)
@@ -187,7 +189,7 @@ struct ContentView: View {
         //.environmentObject(criteria)
     }
     
-    private var refreshButton: some View {
+    public var refreshButton: some View {
         Button {
             playerDataController.reset()
             playerDataController.loadMoreContentIfNeeded(model: REFRESH_MODEL, refresh: true)
