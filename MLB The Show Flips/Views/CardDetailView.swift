@@ -22,10 +22,10 @@ struct CardDetailView: View {
     @Binding var gradientColors: [Color]
     
     
-//    init(playerModel: PlayerDataModel, gradientColors: [Color]) {
-//        _playerModel = ObservedObject.init(initialValue: playerModel)
-//        _gradientColors = Binding.constant(gradientColors)
-//    }
+    //    init(playerModel: PlayerDataModel, gradientColors: [Color]) {
+    //        _playerModel = ObservedObject.init(initialValue: playerModel)
+    //        _gradientColors = Binding.constant(gradientColors)
+    //    }
     
     /**
      Link Button
@@ -52,45 +52,47 @@ struct CardDetailView: View {
                             .progressViewStyle(DarkBlueShadowProgressViewStyle())
                             .scaleEffect(1.5, anchor: .center)
                             .frame(width: 40, height: 40)
-                    }
-                    VStack { //top level
-                        VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
+                            .padding()
+                    } else {
+                        VStack { //top level
+                            VStack(alignment: .center) { //centering V-Stack for the player img, name and subtitle info
+                                
+                                playerModel.image
+                                
+                                Text(playerModel.name)
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 22))
+                                
+                                Text(calc.playerFlipDescription(self.playerModel).1)
+                                    .foregroundColor(Colors.darkGray)
+                                    .font(.system(size: 16))
+                            }
                             
-                            playerModel.image
+                            BuySellProfit(model: playerModel)
                             
-                            Text(playerModel.name)
-                                .foregroundColor(.black)
-                                .font(.system(size: 22))
+                            StubsText(text: "Sales/minute: \(playerModel.transactionsPerMin)", spacing: 5)
                             
-                            Text(calc.playerFlipDescription(self.playerModel).1)
-                                .foregroundColor(Colors.darkGray)
-                                .font(.system(size: 16))
+                            goToWebLink
+                            let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
+                            let rates  = calc.getRates(priceHistory: playerModel.price_history)
+                            let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
+                            Text("Recent Trends")
+                                .font(.system(size: 20, weight: .light, design: .rounded))
+                                .underline()
+                                .padding(.bottom, 0)
+                            HStack (spacing: 10){
+                                LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
+                                LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
+                            }.padding([.horizontal, .bottom], 10)
+                            
+                            
                         }
-                        
-                        BuySellProfit(model: playerModel)
-                        
-                        StubsText(text: "Sales/minute: \(playerModel.transactionsPerMin)", spacing: 5)
-                        
-                        goToWebLink
-                        let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
-                        let rates  = calc.getRates(priceHistory: playerModel.price_history)
-                        let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
-                        Text("Recent Trends")
-                            .font(.system(size: 20, weight: .light, design: .rounded))
-                            .underline()
-                            .padding(.bottom, 0)
-                        HStack (spacing: 10){
-                            LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
-                            LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
-                        }.padding([.horizontal, .bottom], 10)
-                        
-                        
                     }
                 }
                     .toolbar { //refresh button is in toolbar
                         refreshButton
                     }
-                    
+                
             )
     }
     

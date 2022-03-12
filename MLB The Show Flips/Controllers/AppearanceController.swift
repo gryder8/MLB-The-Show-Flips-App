@@ -49,7 +49,7 @@ struct AppearanceController: View {
 }
 
 struct AppearanceController_Previews: PreviewProvider {
-    @State static var testColors: [Color] = [.orange, .black]
+    @State static var testColors: [Color] = [.white, .red]
     static var previews: some View {
         AppearanceController(gradientColors: $testColors)
     }
