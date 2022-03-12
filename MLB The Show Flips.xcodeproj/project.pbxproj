@@ -23,7 +23,7 @@
 		86420757278394A60045FA10 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420756278394A60045FA10 /* Calculator.swift */; };
 		86420759278395790045FA10 /* Criteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420758278395790045FA10 /* Criteria.swift */; };
 		86BEEA1E278D4CBA005A8C02 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */; };
-		86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusion.swift */; };
+		86D861922783FCD400807F4E /* SeriesExclusionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusionVC.swift */; };
 		86D861952785057400807F4E /* PlayerDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* PlayerDataModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +44,7 @@
 		86420756278394A60045FA10 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		86420758278395790045FA10 /* Criteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Criteria.swift; sourceTree = "<group>"; };
 		86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
-		86D861912783FCD400807F4E /* SeriesExclusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusion.swift; sourceTree = "<group>"; };
+		86D861912783FCD400807F4E /* SeriesExclusionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusionVC.swift; sourceTree = "<group>"; };
 		86D861942785057400807F4E /* PlayerDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,8 +80,8 @@
 		8642073E2782A65B0045FA10 /* MLB The Show Flips */ = {
 			isa = PBXGroup;
 			children = (
-				86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */,
-				86C2DF7F2786AA930010A28D /* Main */,
+				86AA7B8F27DD5CA200939746 /* Utilities */,
+				86C2DF7F2786AA930010A28D /* Views */,
 				86C2DF7D2786AA540010A28D /* Controllers */,
 				86C2DF7E2786AA780010A28D /* Model */,
 				86C2DF7C2786AA370010A28D /* Helpers */,
@@ -99,6 +99,15 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		86AA7B8F27DD5CA200939746 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				86420758278395790045FA10 /* Criteria.swift */,
+				86420756278394A60045FA10 /* Calculator.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		86C2DF7C2786AA370010A28D /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -114,7 +123,6 @@
 			children = (
 				860037F62788112C00124EA9 /* AppearanceController.swift */,
 				8642074D2782A67E0045FA10 /* CriteriaController.swift */,
-				86D861912783FCD400807F4E /* SeriesExclusion.swift */,
 				8635C98C278991E30023564F /* PlayerDataController.swift */,
 			);
 			path = Controllers;
@@ -123,21 +131,21 @@
 		86C2DF7E2786AA780010A28D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				86420758278395790045FA10 /* Criteria.swift */,
-				86420756278394A60045FA10 /* Calculator.swift */,
 				864207542783943A0045FA10 /* DataStructs.swift */,
 				86D861942785057400807F4E /* PlayerDataModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		86C2DF7F2786AA930010A28D /* Main */ = {
+		86C2DF7F2786AA930010A28D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */,
 				8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */,
 				864207412782A65B0045FA10 /* HomeView.swift */,
+				86D861912783FCD400807F4E /* SeriesExclusionVC.swift */,
 			);
-			path = Main;
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,7 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				864207422782A65B0045FA10 /* HomeView.swift in Sources */,
-				86D861922783FCD400807F4E /* SeriesExclusion.swift in Sources */,
+				86D861922783FCD400807F4E /* SeriesExclusionVC.swift in Sources */,
 				864207512782C9A80045FA10 /* Colors.swift in Sources */,
 				86420757278394A60045FA10 /* Calculator.swift in Sources */,
 				864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */,
