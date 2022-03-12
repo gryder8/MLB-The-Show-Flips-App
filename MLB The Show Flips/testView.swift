@@ -16,14 +16,16 @@ struct testView: View {
         HStack {
             
             //VStack {
-//                Button("Animate") {
-//                    withAnimation(.interpolatingSpring(stiffness: 80, damping: 4))
-//                }
+            //                Button("Animate") {
+            //                    withAnimation(.interpolatingSpring(stiffness: 80, damping: 4))
+            //                }
             
             VStack (spacing: 20){
                 Button(action: {
-                    withAnimation {
-                        showText.toggle()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation {
+                            showText.toggle()
+                        }
                     }
                 }, label: {
                     ZStack {
@@ -31,7 +33,7 @@ struct testView: View {
                             .frame(width: 110, height: 35, alignment: .center)
                         Text("Toggle Field")
                             .foregroundColor(.black)
-
+                        
                     }
                 })
                 if (showText) {

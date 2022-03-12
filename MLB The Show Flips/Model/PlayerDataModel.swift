@@ -32,8 +32,8 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     var page: Int
     
     var isFetching = false
-    var cachedImage = false //flags so we can call fetching from init()
-    var cachedTransactions = false
+    var hasCachedImage = false //flags so we can call fetching from init()
+    var hasCachedTransactions = false
     
     let itemURLBaseString:String = "https://mlb21.theshow.com/apis/listing.json?uuid="
     
@@ -61,7 +61,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
         let itemURL: URL = URL(string: "\(self.imgURL)")!
         
-        if (!cachedImage) {
+        if (!hasCachedImage) {
             do {
                 isFetching = true
                 let req = URLRequest(url: itemURL)
@@ -86,8 +86,11 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     }
     
     func cacheImage(_ image: Image) {
-        self.image = image
-        print("*Image cached for \(self.name)*")
+        if (!hasCachedImage) {
+            self.image = image
+            print("*Image cached for \(self.name)*")
+            hasCachedImage = true
+        }
     }
     
     
@@ -98,7 +101,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         let errorPlayerItem = PlayerItem(uuid: "ERR", name: "Error", rarity: "ERR", team: "ERR", team_short_name: "ERR", img: errorImgURL, ovr: 0, series: "ERROR", display_position: "ex", series_year: 2021)
         let errorMarketListing = MarketListing(best_sell_price: 0, best_buy_price: 0, item: errorPlayerItem, price_history: [], completed_orders: [])
         
-        if (!cachedTransactions) {
+        if (!hasCachedTransactions) {
             do {
                 isFetching = true
                 let req = URLRequest(url: itemURL)
@@ -118,7 +121,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         return errorMarketListing //error
     }
     
-    public func cacheMarketDate(_ marketData: MarketListing) { //TODO: Have this only recache after a certain time has elapsed
+    public func cacheMarketDate(_ marketData: MarketListing) {
         //store the date of the last cache and compare it to Date()
         self.best_buy_price = marketData.best_buy_price
         self.best_sell_price = marketData.best_sell_price
@@ -127,11 +130,11 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         self.price_history = marketData.price_history
         
         isFetching = false
-        cachedTransactions = true
         self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
         
         print("Transactions/min: \(self.transactionsPerMin)")
-        print("---TRANSACTIONS CACHED")
+        print("---TRANSACTIONS CACHED for \(marketData.item.name)")
+        self.hasCachedTransactions = true
     }
     
     

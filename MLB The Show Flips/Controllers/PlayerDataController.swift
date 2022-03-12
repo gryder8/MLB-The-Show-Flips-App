@@ -33,7 +33,7 @@ class PlayerDataController:ObservableObject {
     
     func reset() {
         isFullyLoaded = false
-        allItems.removeAll()
+//        allItems.removeAll()
         itemsForDisplay.removeAll()
         lastPageLoaded = 0
         pctComplete = 0.0
@@ -80,28 +80,39 @@ class PlayerDataController:ObservableObject {
             await withTaskGroup(of: Image.self, body: { group in
                 for listing in page.listings { //improved performance a little
                     let itm = listing.item
-                    var playerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
-                    let myModel = playerDataModel //pointer to the val which we use as basis for call the function within the call group
+                    var newPlayerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
+                    let myModel = newPlayerDataModel //pointer to the val which we use as basis for call the function within the call group
                     
-                    print("Adding image for \(myModel.name)...")
+                    //print("Adding image for \(myModel.name)... [Image cached: \(myModel.hasCachedImage)]")
                     //add the task to get the image to the group
                     group.addTask(priority: .high, operation: {
                         return await myModel.getImageForModel()
                     })
                     
+                    if (allItems.keys.contains(newPlayerDataModel.uuid)) { //migrate the old image if we have it (no need to refresh this)
+                        if let alreadyStoredItem = allItems[newPlayerDataModel.uuid] {
+                            if (alreadyStoredItem.hasCachedImage) {
+                                newPlayerDataModel.image = alreadyStoredItem.image
+                                newPlayerDataModel.hasCachedImage = true
+                            }
+                        }
+                    }
+                    
                     //use async
                     for await myImage in group { //synchronous
                         if Task.isCancelled { break }
-                        playerDataModel.cacheImage(myImage)
+                        if (!newPlayerDataModel.hasCachedImage) {
+                            newPlayerDataModel.cacheImage(myImage)
+                        }
                         //print("Added image for \(playerDataModel.name)")
                     }
                     
                     //update models if needed (concurrent operation, should be very fast)
-                    if (criteria.meetsFlippingCriteria(&playerDataModel)) {
-                        itemsForDisplay.updateValue(playerDataModel, forKey: itm.uuid)
+                    if (criteria.meetsFlippingCriteria(&newPlayerDataModel)) {
+                        itemsForDisplay.updateValue(newPlayerDataModel, forKey: itm.uuid)
                     }
                     
-                    allItems.updateValue(playerDataModel, forKey: itm.uuid)
+                    allItems.updateValue(newPlayerDataModel, forKey: itm.uuid)
                     
                 }
             })

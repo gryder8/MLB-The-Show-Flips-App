@@ -23,8 +23,6 @@ let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", b
 struct MainListContentRow: View {
     
     @StateObject var playerModel: PlayerDataModel
-    //    var playerListing: PlayerListing
-    //    var playerItem:PlayerItem
     
     var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
@@ -45,7 +43,6 @@ struct MainListContentRow: View {
                         }
                     }
                 })
-            
             let text = calc.playerFlipDescription(playerModel).title
             //let url: URL = URL(string: "\(urlBaseString + playerModel.uuid)")!
             HStack (spacing: 0){
@@ -68,7 +65,7 @@ struct MainListContentRow: View {
 }
 
 
-//@MainActor
+@MainActor //runs all work here on the main thread (DispatchQueue.main)
 struct ContentView: View {
     
     public static var hasInitialized = false
@@ -142,7 +139,7 @@ struct ContentView: View {
                                         .onAppear {
                                             ContentView.hasInitialized = true
                                             //dataSource.setCriteria(new: self.criteria)
-                                            if (!playerModel.cachedTransactions) {
+                                            if (!playerModel.hasCachedTransactions) {
                                                 playerDataController.loadMoreContentIfNeeded(model: playerModel)
                                             }
                                         }
