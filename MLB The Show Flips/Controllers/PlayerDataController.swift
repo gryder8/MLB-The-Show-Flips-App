@@ -12,7 +12,7 @@ import SwiftUI
 
 //TODO: Integrate controls with new code, using ObservedObject
 //  -for the criteria, pass it down as an observed object and call a method to reset the data by setting the cards for display as a sub-dict of AllItems
-//@MainActor
+@MainActor
 class PlayerDataController:ObservableObject {
     
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
@@ -80,6 +80,7 @@ class PlayerDataController:ObservableObject {
             
             //use a task group to create a bunch of tasks for fetching the images
             await withTaskGroup(of: Image.self, body: { group in
+                let copyOfAllItems = allItems
                 for listing in page.listings { //improved performance a little
                     let itm = listing.item
                     var newPlayerDataModel = PlayerDataModel(name: itm.name, uuid: itm.uuid, bestBuy: listing.best_buy_price, bestSell: listing.best_sell_price, ovr: itm.ovr, year: itm.series_year, shortPos: itm.display_position, team: itm.team, series: itm.series, imgURL: itm.img, fromPage: page.page)
@@ -93,7 +94,7 @@ class PlayerDataController:ObservableObject {
                     
                     
                     if (allItems.keys.contains(newPlayerDataModel.uuid)) { //migrate the old image if we have it (no need to refresh this)
-                        if let alreadyStoredItem = allItems[newPlayerDataModel.uuid], alreadyStoredItem.hasCachedImage {
+                        if let alreadyStoredItem = copyOfAllItems[newPlayerDataModel.uuid], alreadyStoredItem.hasCachedImage {
                             newPlayerDataModel.image = alreadyStoredItem.image
                             newPlayerDataModel.hasCachedImage = true
                         }
