@@ -26,12 +26,7 @@ struct MainListContentRow: View {
     
     @Binding var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
-    
-//    init (model: PlayerDataModel, gradColors: [Color]) {
-//        self.gradColors = gradColors
-//        _playerModel = StateObject(wrappedValue: model)
-//    }
-    
+
     var body: some View {
         let calc = Calculator()
         VStack {
@@ -57,11 +52,14 @@ struct MainListContentRow: View {
                     .foregroundColor(.black)
                     .font(.system(size: 22))
                 StubSymbol()
-            }.transition(.slide.animation(.easeInOut))
+            }
+            .transition(.slide.animation(.easeInOut))
+            
             Text(calc.playerFlipDescription(playerModel).desc)
                 .foregroundColor(Colors.darkGray)
                 .font(.system(size: 16))
-        }.transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
+        }
+        .transition(.opacity.combined(with: .scale.animation(.easeInOut(duration: 0.3))))
     }
 }
 
@@ -106,13 +104,9 @@ struct ContentView: View {
     }
     
     
-    //@GestureState var dragAmount = CGSize.zero
-    //@State var hidesNavBar = false
-    
     let urlBaseString = "https://mlb21.theshow.com/items/"
     
     
-    //@StateObject var criteria = Universals.criteria
     @State var gradientColors = Colors.backgroundGradientColors
     
     
@@ -185,7 +179,6 @@ struct ContentView: View {
                     }
                 }
         }
-        //.environmentObject(criteria)
     }
     
     public var refreshButton: some View {

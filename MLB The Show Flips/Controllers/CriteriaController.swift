@@ -94,7 +94,6 @@ struct CriteriaController: View {
                                     .padding(.trailing, 10.0)
                                     .lineLimit(1)
                                     .frame(width: 146)
-                                //.padding(.trailing, 5)
                                 
                                 TextField("Budget", text: $budget)
                                     .onReceive(Just(budget)) { newValue in

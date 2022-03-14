@@ -10,9 +10,8 @@ import Combine
 import SwiftUI
 
 
-//TODO: Integrate controls with new code, using ObservedObject
-//  -for the criteria, pass it down as an observed object and call a method to reset the data by setting the cards for display as a sub-dict of AllItems
-@MainActor
+
+@MainActor //all publishing from here updates the UI and needs to be run on the main thread regardless, so we use @MainActor
 class PlayerDataController:ObservableObject {
     
     private var allItems: [String: PlayerDataModel] = [:] //init to empty, stores ALL data
