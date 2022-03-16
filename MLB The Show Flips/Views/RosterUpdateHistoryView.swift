@@ -41,6 +41,7 @@ struct RosterUpdateHistoryView: View {
             .overlay (
                 
                 VStack{
+                    ScrollView {
                     ForEach(searchResults) { entry in
                         UpdateEntryView(rosterUpdateEntry: entry, controller: self.rosterUpdateController, gradColors: gradColors)
 //                        NavigationLink("\(entry.name)", destination: RosterUpdateView(rosterUpdateController: self.rosterUpdateController))
@@ -57,7 +58,7 @@ struct RosterUpdateHistoryView: View {
                     //.padding(.top,5)
                     //.listStyle(.automatic)
                     .searchable(text: $searchText, prompt: "Search Updates")
-                    
+                    }
 
                 }
             )
@@ -81,7 +82,7 @@ struct UpdateEntryView: View {
             RoundedRectangle(cornerRadius: 10)
                 .frame(width: 300, height: 50, alignment: .center)
                 .foregroundColor(.green)
-            NavigationLink("\(name)", destination: RosterUpdateView(gradColors: gradColors, rosterUpdateController: self.controller))
+            NavigationLink("\(name)", destination: RosterUpdateView(updateID: self.id, gradColors: gradColors, rosterUpdateController: self.controller))
                 .listRowBackground(Color.green)
                 .foregroundColor(.black)
                 .simultaneousGesture(TapGesture().onEnded {
@@ -92,6 +93,8 @@ struct UpdateEntryView: View {
                 })
             
         }
+        .padding()
+        //.offset(x: 0, y: CGFloat(5*id))
     }
 }
 

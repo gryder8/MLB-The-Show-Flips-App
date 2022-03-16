@@ -11,19 +11,21 @@ struct RosterUpdateView: View {
     
     @ObservedObject var rosterUpdateController: RosterUpdateController
     var gradColors: [Color]
+    var updateId: Int
     
-    init(gradColors: [Color], rosterUpdateController ruc: RosterUpdateController) {
+    init(updateID: Int, gradColors: [Color], rosterUpdateController ruc: RosterUpdateController) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
         UITableView.appearance().backgroundColor = .clear
         
+        self.updateId = updateID
         self.gradColors = gradColors
         _rosterUpdateController = ObservedObject.init(initialValue: ruc)
     }
     
     var body: some View {
-        let items = Array(rosterUpdateController.updates.values)
+        let item = rosterUpdateController.updates[updateId] ?? RosterUpdate(attribute_changes: [])
         
         if (rosterUpdateController.isFetching) {
             LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
@@ -37,9 +39,9 @@ struct RosterUpdateView: View {
                 .overlay (
                     ScrollView {
                         VStack(spacing: 15) {
-                            ForEach(items) { item in //id is a UUID()
+                            //ForEach(items) { item in //id is a UUID()
                                 RosterUpdateItemView(rosterUpdate: item)
-                            }
+                            //}
                         }
                     }
                 )
@@ -163,7 +165,7 @@ struct RosterUpdateView_Previews: PreviewProvider {
     static let testColors: [Color] = [.blue, .red]
     static var previews: some View {
         Group {
-            RosterUpdateView(gradColors: testColors, rosterUpdateController: ruController)
+            RosterUpdateView(updateID: 21, gradColors: testColors, rosterUpdateController: ruController)
             AttributeView(attribChange: change)
             OverallChangeView(ratingChange: overallChange)
         }
