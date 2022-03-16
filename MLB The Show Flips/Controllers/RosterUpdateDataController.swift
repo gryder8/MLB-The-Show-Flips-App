@@ -36,6 +36,7 @@ class RosterUpdateController: ObservableObject {
             }
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
                 guard let actualSelf = self else {
+                    print("Self not in memory!")
                     return
                 }
                 actualSelf.isFetching = false
@@ -59,6 +60,7 @@ class RosterUpdateController: ObservableObject {
         do {
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
                 guard let actualSelf = self else {
+                    print("Self not in memory!")
                     return
                 }
                 actualSelf.isFetching = true
@@ -70,6 +72,7 @@ class RosterUpdateController: ObservableObject {
             }
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
                 guard let actualSelf = self else {
+                    print("Self not in memory!")
                     return
                 }
                 actualSelf.isFetching = false

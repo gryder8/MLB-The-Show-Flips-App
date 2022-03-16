@@ -45,13 +45,18 @@ struct RosterUpdateHistoryView: View {
                             .listRowBackground(Color.green)
                             .foregroundColor(.black)
 //                            .simultaneousGesture(TapGesture().onEnded {
-//                                Task.init {
-//                                    await rosterUpdateController.fetchUpdateForID(entry.id)
-//                                }
+//                                print("fetching update with id: \(entry.id)")
+//                                rosterUpdateController.isFetching = true
+////                                Task.init {
+////                                    await rosterUpdateController.fetchUpdateForID(entry.id)
+////                                }
 //                            })
                     }
+                    //.padding(.top,5)
                     .listStyle(.automatic)
                     .searchable(text: $searchText, prompt: "Search Updates")
+                    
+
                 }
             )
     }

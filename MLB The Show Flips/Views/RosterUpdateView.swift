@@ -24,8 +24,9 @@ struct RosterUpdateView: View {
                     }
                 }
             }
+            //This is causing it to pop back
             .task {
-                await rosterUpdateController.fetchUpdateForID(21)
+                await rosterUpdateController.fetchUpdateForID(21) //if I go this route, I need to pass an ID into the struct
             }
         }
     }
