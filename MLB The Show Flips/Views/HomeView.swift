@@ -101,6 +101,8 @@ struct ContentView: View {
         // This property is not present on the UINavigationBarAppearance
         // object for some reason and you have to leave it til the end
         UINavigationBar.appearance().tintColor = .black
+        
+        self._playerDataController = StateObject.init(wrappedValue: PlayerDataController())
     }
     
     
@@ -110,7 +112,8 @@ struct ContentView: View {
     @State var gradientColors = Colors.backgroundGradientColors
     
     
-    @StateObject var playerDataController: PlayerDataController = PlayerDataController() //initialization replaced
+    @StateObject var playerDataController: PlayerDataController //initialization replaced
+    @StateObject var rosterUpdateController: RosterUpdateController = RosterUpdateController()
     
     var loadedPage: Int = Criteria.startPage
     
@@ -160,7 +163,10 @@ struct ContentView: View {
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        refreshButton
+                        HStack {
+                            rosterUpdateButton
+                            refreshButton
+                        }
                     }
                     ToolbarItem(placement: .principal) {
                         Text("Tap a card name for more info")
@@ -190,6 +196,21 @@ struct ContentView: View {
                 .scaleEffect(1.5)
                 .foregroundColor(.black)
         }
+    }
+    
+    public var rosterUpdateButton: some View {
+        NavigationLink(destination: RosterUpdateHistoryView(gradColors: gradientColors, rosterUpdateController: rosterUpdateController)) {
+            
+            Image(systemName: "person.fill.checkmark")
+                .foregroundColor(.black)
+                .scaleEffect(1.5)
+        }
+        .simultaneousGesture(TapGesture().onEnded {
+            Task {
+                await rosterUpdateController.fetchUpdateHistory()
+            }
+        })
+        
     }
     
     private var settingsButton: some View {

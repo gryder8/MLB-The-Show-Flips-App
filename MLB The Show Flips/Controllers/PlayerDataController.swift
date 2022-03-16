@@ -99,7 +99,7 @@ class PlayerDataController:ObservableObject {
                         }
                     }
                     
-                    //use async
+                    //use async/await
                     for await myImage in group { //synchronous
                         if Task.isCancelled { break }
                         //I'm caching everything, that way if the user changes their criteria we have the images already

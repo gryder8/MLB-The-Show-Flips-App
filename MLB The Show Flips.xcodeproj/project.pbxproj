@@ -22,6 +22,10 @@
 		864207552783943A0045FA10 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864207542783943A0045FA10 /* DataStructs.swift */; };
 		86420757278394A60045FA10 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420756278394A60045FA10 /* Calculator.swift */; };
 		86420759278395790045FA10 /* Criteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86420758278395790045FA10 /* Criteria.swift */; };
+		865F0A4627E1A449002577AB /* RosterUpdateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865F0A4527E1A449002577AB /* RosterUpdateModel.swift */; };
+		865F0A4827E1A522002577AB /* RosterUpdateHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865F0A4727E1A522002577AB /* RosterUpdateHistoryView.swift */; };
+		8680B9CA27E159D700B44237 /* RosterUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8680B9C927E159D700B44237 /* RosterUpdateView.swift */; };
+		8680B9CC27E15A6700B44237 /* RosterUpdateDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8680B9CB27E15A6700B44237 /* RosterUpdateDataController.swift */; };
 		86BEEA1E278D4CBA005A8C02 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */; };
 		86D861922783FCD400807F4E /* SeriesExclusionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusionVC.swift */; };
 		86D861952785057400807F4E /* PlayerDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* PlayerDataModel.swift */; };
@@ -43,6 +47,10 @@
 		864207542783943A0045FA10 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructs.swift; sourceTree = "<group>"; };
 		86420756278394A60045FA10 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		86420758278395790045FA10 /* Criteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Criteria.swift; sourceTree = "<group>"; };
+		865F0A4527E1A449002577AB /* RosterUpdateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateModel.swift; sourceTree = "<group>"; };
+		865F0A4727E1A522002577AB /* RosterUpdateHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateHistoryView.swift; sourceTree = "<group>"; };
+		8680B9C927E159D700B44237 /* RosterUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateView.swift; sourceTree = "<group>"; };
+		8680B9CB27E15A6700B44237 /* RosterUpdateDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateDataController.swift; sourceTree = "<group>"; };
 		86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		86D861912783FCD400807F4E /* SeriesExclusionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusionVC.swift; sourceTree = "<group>"; };
 		86D861942785057400807F4E /* PlayerDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataModel.swift; sourceTree = "<group>"; };
@@ -124,6 +132,7 @@
 				860037F62788112C00124EA9 /* AppearanceController.swift */,
 				8642074D2782A67E0045FA10 /* CriteriaController.swift */,
 				8635C98C278991E30023564F /* PlayerDataController.swift */,
+				8680B9CB27E15A6700B44237 /* RosterUpdateDataController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -133,6 +142,7 @@
 			children = (
 				864207542783943A0045FA10 /* DataStructs.swift */,
 				86D861942785057400807F4E /* PlayerDataModel.swift */,
+				865F0A4527E1A449002577AB /* RosterUpdateModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -143,6 +153,8 @@
 				86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */,
 				8642073F2782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift */,
 				864207412782A65B0045FA10 /* HomeView.swift */,
+				8680B9C927E159D700B44237 /* RosterUpdateView.swift */,
+				865F0A4727E1A522002577AB /* RosterUpdateHistoryView.swift */,
 				86D861912783FCD400807F4E /* SeriesExclusionVC.swift */,
 			);
 			path = Views;
@@ -227,11 +239,15 @@
 			files = (
 				864207422782A65B0045FA10 /* HomeView.swift in Sources */,
 				86D861922783FCD400807F4E /* SeriesExclusionVC.swift in Sources */,
+				865F0A4827E1A522002577AB /* RosterUpdateHistoryView.swift in Sources */,
+				8680B9CA27E159D700B44237 /* RosterUpdateView.swift in Sources */,
 				864207512782C9A80045FA10 /* Colors.swift in Sources */,
 				86420757278394A60045FA10 /* Calculator.swift in Sources */,
 				864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */,
+				8680B9CC27E15A6700B44237 /* RosterUpdateDataController.swift in Sources */,
 				860037F72788112C00124EA9 /* AppearanceController.swift in Sources */,
 				86420759278395790045FA10 /* Criteria.swift in Sources */,
+				865F0A4627E1A449002577AB /* RosterUpdateModel.swift in Sources */,
 				860037F92788393000124EA9 /* PremadeViews.swift in Sources */,
 				86D861952785057400807F4E /* PlayerDataModel.swift in Sources */,
 				8635C98D278991E30023564F /* PlayerDataController.swift in Sources */,
