@@ -31,15 +31,13 @@ class RosterUpdateController: ObservableObject {
             }
             let (data, _) = try await URLSession.shared.data(from: updateEntriesURL)
             let decodedResult = try JSONDecoder().decode(RosterUpdateHistory.self, from: data)
-            DispatchQueue.main.async {
-                self.updateHistory = decodedResult //publish on the main thread
-            }
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
-                guard let actualSelf = self else {
+                guard let self = self else {
                     print("Self not in memory!")
                     return
                 }
-                actualSelf.isFetching = false
+                self.updateHistory = decodedResult //publish on the main thread
+                self.isFetching = false
             }
             print("Fetched roster update history")
         } catch {
@@ -49,6 +47,7 @@ class RosterUpdateController: ObservableObject {
     
     func fetchUpdateForID(_ id: Int) async {
         guard let updateURL = URL(string: "https://mlb21.theshow.com/apis/roster_update.json?id=\(id)") else {
+            print("Failed to generate URL")
             return
         }
         
@@ -67,15 +66,13 @@ class RosterUpdateController: ObservableObject {
             }
             let (data, _) = try await URLSession.shared.data(from: updateURL)
             let decodedResult:RosterUpdate = try JSONDecoder().decode(RosterUpdate.self, from: data)
-            DispatchQueue.main.async {
-                self.updates.updateValue(decodedResult, forKey: id)
-            }
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
-                guard let actualSelf = self else {
+                guard let self = self else {
                     print("Self not in memory!")
                     return
                 }
-                actualSelf.isFetching = false
+                self.updates.updateValue(decodedResult, forKey: id)
+                self.isFetching = false
             }
             print("Fetched update with id: \(id)")
         } catch {
