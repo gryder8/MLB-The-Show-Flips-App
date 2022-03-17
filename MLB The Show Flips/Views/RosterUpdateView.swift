@@ -9,11 +9,11 @@ import SwiftUI
 
 struct RosterUpdateView: View {
     
-    @ObservedObject var rosterUpdateController: RosterUpdateController
+    @ObservedObject var rosterUpdateController: RosterUpdateViewModel
     var gradColors: [Color]
     var updateId: Int
     
-    init(updateID: Int, gradColors: [Color], rosterUpdateController ruc: RosterUpdateController) {
+    init(updateID: Int, gradColors: [Color], rosterUpdateController ruc: RosterUpdateViewModel) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
@@ -159,7 +159,7 @@ struct AttributeView: View {
 }
 
 struct RosterUpdateView_Previews: PreviewProvider {
-    static var ruController = RosterUpdateController()
+    static var ruController = RosterUpdateViewModel()
     static let change = RosterUpdateAttributeChange(name: "SPD", current_value: "90", direction: "positive", delta: "-7", color: "blue")
     static let overallChange = RosterUpdateRatingChange(name: "Trevor Bauer", team: "Lodgers", current_rarity: "Diamond", old_rarity: "Diamond", obfuscated_id: "34556464", current_rank: 99, old_rank: 88, changes: [change])
     static let testColors: [Color] = [.blue, .red]

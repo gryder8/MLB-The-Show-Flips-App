@@ -26,7 +26,7 @@ struct MainListContentRow: View {
     
     @Binding var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
-
+    
     var body: some View {
         let calc = Calculator()
         VStack {
@@ -39,7 +39,7 @@ struct MainListContentRow: View {
                     }
                 })
             let text = calc.playerFlipDescription(playerModel).title
-            HStack (spacing: 0){
+            HStack (spacing: 0) {
                 NavigationLink("\(text)", destination: CardDetailView(playerModel: playerModel, gradientColors: self.$gradColors))
                     .simultaneousGesture(TapGesture().onEnded({
                         Task.init {
@@ -113,7 +113,7 @@ struct ContentView: View {
     
     
     @StateObject var playerDataController: PlayerDataController //initialization replaced
-    @StateObject var rosterUpdateController: RosterUpdateController = RosterUpdateController()
+    @StateObject var rosterUpdateController: RosterUpdateViewModel = RosterUpdateViewModel()
     
     var loadedPage: Int = Criteria.startPage
     
@@ -122,14 +122,25 @@ struct ContentView: View {
             LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay(
-                    ScrollView {
-                        VStack {
-                            HStack(spacing: 3) {
-                                Text("Budget Per Card: \(Criteria.shared.budget)")
-                                    .padding(.vertical, 10)
-                                    .font(.system(size: 30, design: .rounded))
-                                StubSymbol()
+                    VStack {
+                        HStack(spacing: 3) {
+                            Text("Budget Per Card: \(Criteria.shared.budget)")
+                                .padding(.vertical, 10)
+                                .font(.system(size: 30, design: .rounded))
+                            StubSymbol()
+                        }
+                        if playerDataController.isLoading {
+                            
+                            VStack {
+                                Text("Loading...")
+                                    .font(.system(size: 26, weight: .regular, design: .rounded))
+                                ProgressView()
+                                    .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                                    .scaleEffect(1.5, anchor: .center)
                             }
+                        }
+                        ScrollView{
+                            
                             LazyVStack {
                                 ForEach(playerDataController.sortedModels()) { playerModel in
                                     //let playerItem = playerModel.item
@@ -145,11 +156,7 @@ struct ContentView: View {
                                 }
                                 
                                 
-                                if playerDataController.isLoading {
-                                    ProgressView()
-                                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                                        .scaleEffect(1.5, anchor: .center)
-                                }
+
                                 
                             }
                         }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RosterUpdateHistoryView: View {
     
-    @ObservedObject var rosterUpdateController: RosterUpdateController
+    @ObservedObject var rosterUpdateController: RosterUpdateViewModel
     @Binding var gradColors: [Color]
     
     @State var searchText: String = ""
@@ -22,7 +22,7 @@ struct RosterUpdateHistoryView: View {
         }
     }
     
-    init(gradColors: [Color], rosterUpdateController ruc: RosterUpdateController) {
+    init(gradColors: [Color], rosterUpdateController ruc: RosterUpdateViewModel) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
@@ -69,8 +69,8 @@ struct UpdateEntryView: View {
     var gradColors: [Color]
     var name: String
     var id: Int
-    var controller: RosterUpdateController
-    init(rosterUpdateEntry: RosterUpdateEntry, controller: RosterUpdateController, gradColors: [Color]) {
+    var controller: RosterUpdateViewModel
+    init(rosterUpdateEntry: RosterUpdateEntry, controller: RosterUpdateViewModel, gradColors: [Color]) {
         self.name = rosterUpdateEntry.name
         self.id = rosterUpdateEntry.id
         self.controller = controller
@@ -100,7 +100,7 @@ struct UpdateEntryView: View {
 
 struct RosterUpdateHistoryView_Previews: PreviewProvider {
     static var testColors: [Color] = [.blue, .red]
-    static var ruController = RosterUpdateController()
+    static var ruController = RosterUpdateViewModel()
     static var previews: some View {
         RosterUpdateHistoryView(gradColors: testColors, rosterUpdateController: ruController)
     }

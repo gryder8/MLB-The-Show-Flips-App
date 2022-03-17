@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class RosterUpdateController: ObservableObject {
+class RosterUpdateViewModel: ObservableObject {
     @Published var updates: [Int: RosterUpdate] = [:]
     @Published var updateHistory: RosterUpdateHistory = RosterUpdateHistory(roster_updates: [])
     
