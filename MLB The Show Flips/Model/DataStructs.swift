@@ -93,8 +93,8 @@ struct RosterUpdateHistory: Decodable {
  */
 struct RosterUpdateAttributeChange: Decodable, CustomStringConvertible, Identifiable {
     
-    var id: String {
-        return name
+    var id: UUID {
+        return UUID()
     }
     
     let name, current_value, direction, delta, color: String
@@ -170,7 +170,11 @@ struct RosterUpdateRatingChange: Decodable, CustomStringConvertible, Identifiabl
         return "\n\(name), \(team): \(old_rank), \(old_rarity) --> \(current_rank), \(current_rarity) [\(trend_symbol)\(trend_display)]\n \(changes)"
     }
 }
-
+/**
+ Holds all the changes associatedf with an update
+ 
+ TODO: test/fix position changes and newly added
+ */
 struct RosterUpdate: Decodable, Identifiable {
     
     var id: UUID {

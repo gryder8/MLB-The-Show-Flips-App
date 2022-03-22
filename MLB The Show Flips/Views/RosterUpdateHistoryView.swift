@@ -16,10 +16,12 @@ struct RosterUpdateHistoryView: View {
     
     var searchResults:[RosterUpdateEntry] {
         if (searchText.isEmpty) {
+            //print("***Updates: \(rosterUpdateController.updateHistory.roster_updates)")
             return rosterUpdateController.updateHistory.roster_updates
         } else {
             return rosterUpdateController.updateHistory.roster_updates.filter { update in update.name.contains(searchText) }
         }
+        
     }
     
     init(gradColors: [Color], rosterUpdateController ruc: RosterUpdateViewModel) {
@@ -35,32 +37,45 @@ struct RosterUpdateHistoryView: View {
     
     var body: some View {
         //let listEntries = rosterUpdateController.updateHistory.roster_updates
-
+        
+        
         LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
             .overlay (
                 
-                VStack{
-                    ScrollView {
-                    ForEach(searchResults) { entry in
-                        UpdateEntryView(rosterUpdateEntry: entry, controller: self.rosterUpdateController, gradColors: gradColors)
-//                        NavigationLink("\(entry.name)", destination: RosterUpdateView(rosterUpdateController: self.rosterUpdateController))
-//                            .listRowBackground(Color.green)
-//                            .foregroundColor(.black)
-//                            .simultaneousGesture(TapGesture().onEnded {
-//                                print("fetching update with id: \(entry.id)")
-//                                Task.init {
-//                                    await rosterUpdateController.fetchUpdateForID(entry.id)
-//                                }
-//                            })
+                //VStack{
+                //ScrollView {
+                    VStack {
+                        List(searchResults) { entry in
+                            NavigationLink("\(entry.name)", destination: RosterUpdateView(updateID: entry.id, gradColors: self.gradColors, rosterUpdateVM: self.rosterUpdateController))
+                                .foregroundColor(.black)
+                                .simultaneousGesture(TapGesture().onEnded { value in
+                                    print("fetching update with id: \(entry.id)")
+                                    Task(priority: .high) {
+                                        await self.rosterUpdateController.fetchUpdateForID(entry.id)
+                                    }
+                                })
+                                .listRowBackground(Color.clear)
+                                .foregroundColor(.black)
+                                //.padding()
+//                            UpdateEntryView(rosterUpdateEntry: entry, controller: self.rosterUpdateController, gradColors: gradColors)
+                            //                        NavigationLink("\(entry.name)", destination: RosterUpdateView(rosterUpdateController: self.rosterUpdateController))
+                            //                            .listRowBackground(Color.green)
+                            //                            .foregroundColor(.black)
+                            //                            .simultaneousGesture(TapGesture().onEnded {
+                            //                                print("fetching update with id: \(entry.id)")
+                            //                                Task.init {
+                            //                                    await rosterUpdateController.fetchUpdateForID(entry.id)
+                            //                                }
+                            //                            })
+                        }
+                        .padding(.top, 10)
+                        .listStyle(.inset)
+                        .searchable(text: $searchText, prompt: "Search Updates")
                     }
-                    .padding()
-                    //.padding(.top,5)
-                    //.listStyle(.automatic)
-                    .searchable(text: $searchText, prompt: "Search Updates")
-                    }
-
-                }
+                    
+                    
+               // }
             )
     }
 }
@@ -82,19 +97,18 @@ struct UpdateEntryView: View {
             RoundedRectangle(cornerRadius: 10)
                 .frame(width: 300, height: 50, alignment: .center)
                 .foregroundColor(.green)
-            NavigationLink("\(name)", destination: RosterUpdateView(updateID: self.id, gradColors: gradColors, rosterUpdateController: self.controller))
+            NavigationLink("\(name)", destination: RosterUpdateView(updateID: self.id, gradColors: gradColors, rosterUpdateVM: self.controller))
                 .listRowBackground(Color.green)
                 .foregroundColor(.black)
                 .simultaneousGesture(TapGesture().onEnded {
                     print("fetching update with id: \(self.id)")
-                    Task.init {
+                    Task(priority: .high) {
                         await controller.fetchUpdateForID(self.id)
                     }
                 })
             
         }
         .padding()
-        //.offset(x: 0, y: CGFloat(5*id))
     }
 }
 

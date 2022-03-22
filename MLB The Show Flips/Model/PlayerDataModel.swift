@@ -63,6 +63,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
         if (!hasCachedImage) {
             do {
+               
                 isFetching = true
                 let req = URLRequest(url: itemURL)
                 //print("Beginning async let for \(name)...")

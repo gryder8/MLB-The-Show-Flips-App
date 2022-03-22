@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-
+/**
+ A standard `ProgressView` with a dark blue shadow
+ */
 struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
     func makeBody(configuration: Configuration) -> some View {
         ProgressView(configuration)
@@ -19,7 +21,9 @@ struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
 //let playerDataController = PlayerDataController()
 let REFRESH_MODEL:PlayerDataModel = PlayerDataModel(name: "", uuid: "REFRESH", bestBuy: 0, bestSell: 0, ovr: 0, year: 0, shortPos: "", team: "", series: "", imgURL: URL(string:"https://apple.com")!, fromPage: 0)
 
-
+/**
+ A view which represents a player entry, including its image
+ */
 struct MainListContentRow: View {
     
     @StateObject var playerModel: PlayerDataModel //this object drives the state of the view, we "own" it
@@ -130,7 +134,6 @@ struct ContentView: View {
                             StubSymbol()
                         }
                         if playerDataController.isLoading {
-                            
                             VStack {
                                 Text("Loading...")
                                     .font(.system(size: 26, weight: .regular, design: .rounded))

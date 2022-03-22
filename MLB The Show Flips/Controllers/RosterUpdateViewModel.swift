@@ -46,6 +46,11 @@ class RosterUpdateViewModel: ObservableObject {
     }
     
     func fetchUpdateForID(_ id: Int) async {
+        
+        if (isFetching) {
+            return //prevent making another request
+        }
+        
         guard let updateURL = URL(string: "https://mlb21.theshow.com/apis/roster_update.json?id=\(id)") else {
             print("Failed to generate URL")
             return
@@ -58,11 +63,7 @@ class RosterUpdateViewModel: ObservableObject {
         
         do {
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
-                guard let actualSelf = self else {
-                    print("Self not in memory!")
-                    return
-                }
-                actualSelf.isFetching = true
+                self?.isFetching = true
             }
             let (data, _) = try await URLSession.shared.data(from: updateURL)
             let decodedResult:RosterUpdate = try JSONDecoder().decode(RosterUpdate.self, from: data)

@@ -9,11 +9,11 @@ import SwiftUI
 
 struct RosterUpdateView: View {
     
-    @ObservedObject var rosterUpdateController: RosterUpdateViewModel
+    @ObservedObject var rosterUpdateViewModel: RosterUpdateViewModel
     var gradColors: [Color]
     var updateId: Int
     
-    init(updateID: Int, gradColors: [Color], rosterUpdateController ruc: RosterUpdateViewModel) {
+    init(updateID: Int, gradColors: [Color], rosterUpdateVM ruVM: RosterUpdateViewModel) {
         UINavigationBar.appearance().backgroundColor = .clear
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().barTintColor = .black
@@ -21,13 +21,13 @@ struct RosterUpdateView: View {
         
         self.updateId = updateID
         self.gradColors = gradColors
-        _rosterUpdateController = ObservedObject.init(initialValue: ruc)
+        _rosterUpdateViewModel = ObservedObject.init(initialValue: ruVM)
     }
     
     var body: some View {
-        let item = rosterUpdateController.updates[updateId] ?? RosterUpdate(attribute_changes: [])
+        let item = rosterUpdateViewModel.updates[updateId] ?? RosterUpdate(attribute_changes: [])
         
-        if (rosterUpdateController.isFetching) {
+        if (rosterUpdateViewModel.isFetching) {
             LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay (
@@ -44,6 +44,9 @@ struct RosterUpdateView: View {
                             //}
                         }
                     }
+//                        .task {
+//                            await rosterUpdateViewModel.fetchUpdateForID(self.updateId)
+//                        }
                 )
             //This is causing it to pop back
             //            .task {
@@ -64,7 +67,7 @@ struct RosterUpdateItemView: View {
         
         ForEach(entry.attribute_changes) { playerChange in
             OverallChangeView(ratingChange: playerChange)
-            ScrollView(.horizontal, showsIndicators: true) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack (alignment: .center, spacing: 20) {
                     Spacer()
                     ForEach(playerChange.changes) { attribChange in
@@ -99,12 +102,14 @@ struct OverallChangeView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
                 .frame(width: 300, height: 50, alignment: .center)
-                .foregroundColor(.teal)
+                .foregroundColor(.clear)
             HStack {
                 Text("\(name): \(oldRating)")
                 Image(systemName: "arrow.right")
                 Text("\(newRating)")
             }
+            .font(.system(size: 24, weight: .medium, design: .rounded))
+            .foregroundColor(.black)
         }
     }
 }
@@ -124,6 +129,9 @@ struct AttributeView: View {
     }
     
     var body: some View {
+        
+        let signs = CharacterSet(charactersIn: "+-")
+        
         ZStack {
             //GeometryReader { geom in
             
@@ -136,7 +144,7 @@ struct AttributeView: View {
                 Text("\(attribName)")
                     .padding(.top, 5)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                Text("\(delta)")
+                Text("\(attribValue)")
                     .font(.system(size: 16, weight: .regular , design: .rounded))
                 
                 ZStack {
@@ -144,7 +152,7 @@ struct AttributeView: View {
                         .frame(width: 50, height: 35, alignment: .center)
                         .foregroundColor(delta.contains("+") ? .green : .red)
                     HStack (spacing: 3) {
-                        Text("\(attribValue)")
+                        Text("\(delta.trimmingCharacters(in: signs))")
                         Image(systemName: delta.contains("+") ? "arrow.up" : "arrow.down")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                     }
@@ -165,7 +173,7 @@ struct RosterUpdateView_Previews: PreviewProvider {
     static let testColors: [Color] = [.blue, .red]
     static var previews: some View {
         Group {
-            RosterUpdateView(updateID: 21, gradColors: testColors, rosterUpdateController: ruController)
+            RosterUpdateView(updateID: 21, gradColors: testColors, rosterUpdateVM: ruController)
             AttributeView(attribChange: change)
             OverallChangeView(ratingChange: overallChange)
         }

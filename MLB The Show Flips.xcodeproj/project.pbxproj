@@ -27,6 +27,7 @@
 		8680B9CA27E159D700B44237 /* RosterUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8680B9C927E159D700B44237 /* RosterUpdateView.swift */; };
 		8680B9CC27E15A6700B44237 /* RosterUpdateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8680B9CB27E15A6700B44237 /* RosterUpdateViewModel.swift */; };
 		8692DDB327E2604100C400E0 /* CustomNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8692DDB227E2604100C400E0 /* CustomNavigationLink.swift */; };
+		86A1CA8F27E93B620097955F /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86A1CA8E27E93B620097955F /* Cache.swift */; };
 		86BEEA1E278D4CBA005A8C02 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */; };
 		86D861922783FCD400807F4E /* SeriesExclusionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861912783FCD400807F4E /* SeriesExclusionVC.swift */; };
 		86D861952785057400807F4E /* PlayerDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D861942785057400807F4E /* PlayerDataModel.swift */; };
@@ -53,6 +54,7 @@
 		8680B9C927E159D700B44237 /* RosterUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateView.swift; sourceTree = "<group>"; };
 		8680B9CB27E15A6700B44237 /* RosterUpdateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterUpdateViewModel.swift; sourceTree = "<group>"; };
 		8692DDB227E2604100C400E0 /* CustomNavigationLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomNavigationLink.swift; sourceTree = "<group>"; };
+		86A1CA8E27E93B620097955F /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		86BEEA1D278D4CBA005A8C02 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		86D861912783FCD400807F4E /* SeriesExclusionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesExclusionVC.swift; sourceTree = "<group>"; };
 		86D861942785057400807F4E /* PlayerDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataModel.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			children = (
 				864207542783943A0045FA10 /* DataStructs.swift */,
 				86D861942785057400807F4E /* PlayerDataModel.swift */,
+				86A1CA8E27E93B620097955F /* Cache.swift */,
 				865F0A4527E1A449002577AB /* RosterUpdateModel.swift */,
 			);
 			path = Model;
@@ -246,6 +249,7 @@
 				8680B9CA27E159D700B44237 /* RosterUpdateView.swift in Sources */,
 				8692DDB327E2604100C400E0 /* CustomNavigationLink.swift in Sources */,
 				864207512782C9A80045FA10 /* Colors.swift in Sources */,
+				86A1CA8F27E93B620097955F /* Cache.swift in Sources */,
 				86420757278394A60045FA10 /* Calculator.swift in Sources */,
 				864207402782A65B0045FA10 /* MLB_The_Show_FlipsApp.swift in Sources */,
 				8680B9CC27E15A6700B44237 /* RosterUpdateViewModel.swift in Sources */,
