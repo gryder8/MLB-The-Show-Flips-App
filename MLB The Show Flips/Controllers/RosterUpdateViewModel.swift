@@ -20,7 +20,7 @@ class RosterUpdateViewModel: ObservableObject {
             return
         }
         
-        let updateEntriesURL = URL(string: "https://mlb21.theshow.com/apis/roster_updates.json")!
+        let updateEntriesURL = URL(string: "https://mlb22.theshow.com/apis/roster_updates.json")!
         do {
             DispatchQueue.main.async { [weak self] in  //publish on main thread, avoid retain cycle!
                 guard let actualSelf = self else {
@@ -51,7 +51,7 @@ class RosterUpdateViewModel: ObservableObject {
             return //prevent making another request
         }
         
-        guard let updateURL = URL(string: "https://mlb21.theshow.com/apis/roster_update.json?id=\(id)") else {
+        guard let updateURL = URL(string: "https://mlb22.theshow.com/apis/roster_update.json?id=\(id)") else {
             print("Failed to generate URL")
             return
         }

@@ -29,7 +29,7 @@ struct MainListContentRow: View {
     @StateObject var playerModel: PlayerDataModel //this object drives the state of the view, we "own" it
     
     @Binding var gradColors: [Color]
-    let urlBaseString = "https://mlb21.theshow.com/items/"
+    let urlBaseString = "https://mlb22.theshow.com/items/"
     
     var body: some View {
         let calc = Calculator()
@@ -110,7 +110,7 @@ struct ContentView: View {
     }
     
     
-    let urlBaseString = "https://mlb21.theshow.com/items/"
+    let urlBaseString = "https://mlb22.theshow.com/items/"
     
     
     @State var gradientColors = Colors.backgroundGradientColors

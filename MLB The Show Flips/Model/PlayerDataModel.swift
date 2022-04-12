@@ -35,7 +35,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     var hasCachedImage = false //flags so we can call fetching from init()
     var hasCachedTransactions = false
     
-    let itemURLBaseString:String = "https://mlb21.theshow.com/apis/listing.json?uuid="
+    let itemURLBaseString:String = "https://mlb22.theshow.com/apis/listing.json?uuid="
     
     let calc = Calculator()
     @Published var transactionsPerMin: Double = 0
