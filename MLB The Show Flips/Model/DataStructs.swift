@@ -20,9 +20,21 @@ struct Page: Decodable {
 /**
  Represents 1 historical price value entry in the price history
  */
-struct HistoricalPriceValue: Decodable {
+struct HistoricalPriceValue: Decodable, Hashable {
     let date: String //Format: "1/8"
     let best_buy_price, best_sell_price: Int
+    
+    var dateAsDateObject: Date {
+        let year = Calendar.current.component(.year, from: Date())
+
+        let dateFormatter = DateFormatter()
+
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let qualifiedString = "\(date)/\(year)"
+        return dateFormatter.date(from: qualifiedString) ?? Date()
+    }
 }
 
 /**

@@ -68,10 +68,19 @@ class Calculator {
         return (Double(completedOrders.count) / diffInMinutes).round(to: 2)
     }
     
-    func getPriceHistoriesForGraph(priceHistory: [HistoricalPriceValue]) -> (bestBuy: [Double], bestSell: [Double]) {
-        let bestBuy:[Double] = priceHistory.map {price in Double(price.best_buy_price)}
-        let bestSell: [Double] = priceHistory.map {price in Double(price.best_sell_price)}
-        return (bestBuy, bestSell)
+    func getPriceHistoriesForGraph(priceHistory: [HistoricalPriceValue]) -> (bestBuy: [Double], bestSell: [Double], dates: [Date]) {
+        
+//        let year = Calendar.current.component(.year, from: Date())
+//
+//        let dateFormatter = DateFormatter()
+//
+//        dateFormatter.dateFormat = "MM/dd/yyyy"
+//        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let bestBuy:[Double] = priceHistory.map {entry in Double(entry.best_buy_price)}
+        let bestSell: [Double] = priceHistory.map {entry in Double(entry.best_sell_price)}
+        let dates: [Date] = priceHistory.map {entry in entry.dateAsDateObject}
+        return (bestBuy, bestSell, dates)
     }
     
     func getRates(priceHistory: [HistoricalPriceValue]) -> (buyRate: Int, sellRate: Int) { 

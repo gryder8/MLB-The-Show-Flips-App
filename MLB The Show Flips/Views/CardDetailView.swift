@@ -7,9 +7,11 @@
 
 import SwiftUI
 import SwiftUICharts
+import Charts
 
 //https://github.com/AppPear/ChartView/
 //https://github.com/aunnnn/MovingNumbersView
+
 
 /**
  Detail view for each card shown when the name is tapped
@@ -81,8 +83,19 @@ struct CardDetailView: View {
                                 .underline()
                                 .padding(.bottom, 0)
                             HStack (spacing: 10){
-                                LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
-                                LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
+                                if #available(iOS 16.0, *) {
+                                    Chart(playerModel.price_history, id: \.self) { priceHistory in
+                                        
+                                        LineMark(x: .value("Date", priceHistory.dateAsDateObject, unit: .day), y: .value("Price", priceHistory.best_buy_price))
+                                            //.foregroundStyle(by: .value("Buy Price", priceHistory.best_buy_price))
+                                    }
+                                    .frame(width: 300, height: 300, alignment: .center)
+                                    .foregroundColor(.black)
+                                } else {
+                                    LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
+                                    LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
+                                }
+
                             }.padding([.horizontal, .bottom], 10)
                             
                             

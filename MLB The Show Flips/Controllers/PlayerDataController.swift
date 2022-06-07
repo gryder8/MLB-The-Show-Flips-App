@@ -26,7 +26,7 @@ class PlayerDataController:ObservableObject {
     
     var criteria = Criteria()
     var calc = Calculator()
-    var isLoading = true
+    var isLoading = false
     
     private let pageBaseURL = "https://mlb21.theshow.com/apis/listings.json?type=mlb_card&page="
     
@@ -122,8 +122,9 @@ class PlayerDataController:ObservableObject {
             lastPageLoaded = currentSequentialPage
             currentSequentialPage += 1
             pctComplete = Double(lastPageLoaded) / Double(totalPages)
-            isLoading = false
-            
+            withAnimation {
+                isLoading = false
+            }
         } catch {
             print("***Error caching page: \(error)")
         }
