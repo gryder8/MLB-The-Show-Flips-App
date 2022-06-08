@@ -87,10 +87,10 @@ struct CardDetailView: View {
                                     Chart(playerModel.price_history, id: \.self) { priceHistory in
                                         
                                         LineMark(x: .value("Date", priceHistory.dateAsDateObject, unit: .day), y: .value("Price", priceHistory.best_buy_price))
+                                            .foregroundStyle(.black.gradient)
                                             //.foregroundStyle(by: .value("Buy Price", priceHistory.best_buy_price))
                                     }
-                                    .frame(width: 300, height: 300, alignment: .center)
-                                    .foregroundColor(.black)
+                                    .frame(height: 300)
                                 } else {
                                     LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
                                     LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)
