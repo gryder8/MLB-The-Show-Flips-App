@@ -20,10 +20,27 @@ struct Page: Decodable {
 /**
  Represents 1 historical price value entry in the price history
  */
-struct HistoricalPriceValue: Decodable, Hashable {
+struct HistoricalPriceValue: Decodable, Hashable, Identifiable, CustomStringConvertible {
+    
+    var description: String {
+        return "--\(date): \(profit) stubs profit--\n"
+    }
+    
+    ///ID (is the date string)
+    var id: String { date }
+    
+    ///String date from the API
     let date: String //Format: "1/8"
+    
     let best_buy_price, best_sell_price: Int
     
+    ///profit at the given time
+    var profit: Int {
+        let calc = Calculator()
+        return calc.flipProfit(self.best_sell_price, self.best_buy_price)
+    }
+    
+    ///transaction date as a Date object
     var dateAsDateObject: Date {
         let year = Calendar.current.component(.year, from: Date())
 

@@ -12,11 +12,24 @@ import Charts
 //https://github.com/AppPear/ChartView/
 //https://github.com/aunnnn/MovingNumbersView
 
+///DataSeries for SwiftChart
+struct DataEntry: Identifiable {
+    
+    let name: String
+    let data: [HistoricalPriceValue]
+    
+    var id: String { name }
+}
 
 /**
  Detail view for each card shown when the name is tapped
  */
 struct CardDetailView: View {
+    
+    func priceHistorySorter(_ h1: HistoricalPriceValue, _ h2: HistoricalPriceValue) -> Bool {
+        return h1.dateAsDateObject < h2.dateAsDateObject
+    }
+    
     private let urlBaseString = "https://mlb22.theshow.com/items/"
     private let calc:Calculator = Calculator()
     @ObservedObject var playerModel: PlayerDataModel //since we want to be able to refresh, we want to observe the changes to this object
@@ -78,19 +91,31 @@ struct CardDetailView: View {
                             let histories = calc.getPriceHistoriesForGraph(priceHistory: playerModel.price_history)
                             let rates  = calc.getRates(priceHistory: playerModel.price_history)
                             let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
-                            Text("Recent Trends")
-                                .font(.system(size: 20, weight: .light, design: .rounded))
-                                .underline()
-                                .padding(.bottom, 0)
+                            if #available(iOS 16.0, *) {
+                                Text("Profit History")
+                                    .font(.system(size: 20, weight: .light, design: .rounded))
+                                    .underline()
+                            } else {
+                                Text("Recent Trends")
+                                    .font(.system(size: 20, weight: .light, design: .rounded))
+                                    .underline()
+                            }
                             HStack (spacing: 10){
                                 if #available(iOS 16.0, *) {
-                                    Chart(playerModel.price_history, id: \.self) { priceHistory in
-                                        
-                                        LineMark(x: .value("Date", priceHistory.dateAsDateObject, unit: .day), y: .value("Price", priceHistory.best_buy_price))
-                                            .foregroundStyle(.black.gradient)
-                                            //.foregroundStyle(by: .value("Buy Price", priceHistory.best_buy_price))
+                                    let chartData: [DataEntry] = [
+                                        .init(name: "Profit", data:  playerModel.price_history.sorted(by: priceHistorySorter(_:_:) ))
+                                    ]
+                                    Chart(chartData) { dataObj in
+                                        ForEach(dataObj.data) { element in
+                                            LineMark(
+                                                x: .value("Day", element.dateAsDateObject), y: .value("Profit", element.profit))
+                                            //.foregroundStyle(.red.gradient)
+                                        }
+                                        .symbol(by: .value("Profit", dataObj.name))
+                                        .interpolationMethod(.catmullRom)
                                     }
                                     .frame(height: 300)
+                                    .padding(.horizontal)
                                 } else {
                                     LineChartView(data: histories.bestBuy, title: "Best Buy", style: chartStyle, rateValue: rates.buyRate)
                                     LineChartView(data: histories.bestSell, title: "Best Sell", style: chartStyle, rateValue: rates.sellRate)

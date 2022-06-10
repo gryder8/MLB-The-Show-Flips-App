@@ -26,6 +26,12 @@ class Calculator {
         return Int(sellActual - buyActual)
     }
     
+    func flipProfit(_ bestSellPrice: Int, _ bestBuyPrice: Int) -> Int { //overload
+        let buyActual:Double = Double(bestBuyPrice + 1)
+        let sellActual:Double = Double(bestSellPrice - 1) * 0.9
+        return Int(sellActual - buyActual)
+    }
+    
     
     private func signFor(_ val: Int) -> String {
         if (val > 0) {

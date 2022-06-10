@@ -130,12 +130,16 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
         self.completed_orders = marketData.completed_orders
         self.price_history = marketData.price_history
+//        self.price_history = self.price_history.sorted(by: { entry1, entry2 in return entry1.dateAsDateObject < entry2.dateAsDateObject} )
         
         isFetching = false
         self.transactionsPerMin = calc.transactionsPerMinute(completedOrders: self.completed_orders)
         
         print("Transactions/min: \(self.transactionsPerMin)")
         print("---TRANSACTIONS CACHED for \(marketData.item.name)")
+        
+        print(self.price_history)
+        
         self.hasCachedTransactions = true
     }
     
