@@ -12,7 +12,7 @@ class RosterUpdateViewModel: ObservableObject {
     @Published var updates: [Int: RosterUpdate] = [:]
     @Published var updateHistory: RosterUpdateHistory = RosterUpdateHistory(roster_updates: [])
     
-    private var isFetching: Bool  = false //for local non-duplication of requests only
+    @Published var isFetching: Bool  = false
     
     func fetchUpdateHistory() async {
         if (!updates.isEmpty) {
@@ -20,7 +20,7 @@ class RosterUpdateViewModel: ObservableObject {
             return
         }
         
-        let updateEntriesURL = URL(string: "https://mlb22.theshow.com/apis/roster_updates.json")!
+        let updateEntriesURL = URL(string: "https://mlb21.theshow.com/apis/roster_updates.json")!
         do {
             DispatchQueue.main.async { [weak self] in  //publish on main thread, avoid retain cycle!
                 guard let actualSelf = self else {
@@ -48,11 +48,10 @@ class RosterUpdateViewModel: ObservableObject {
     func fetchUpdateForID(_ id: Int) async {
         
         if (isFetching) {
-            print("***Already fetching!***")
             return //prevent making another request
         }
         
-        guard let updateURL = URL(string: "https://mlb22.theshow.com/apis/roster_update.json?id=\(id)") else {
+        guard let updateURL = URL(string: "https://mlb21.theshow.com/apis/roster_update.json?id=\(id)") else {
             print("Failed to generate URL")
             return
         }
@@ -63,24 +62,21 @@ class RosterUpdateViewModel: ObservableObject {
         }
         
         do {
-            //DispatchQueue.main.async { [weak self] in  //publish on main thread!
-                self.isFetching = true
-            //}
-            
+            DispatchQueue.main.async { [weak self] in  //publish on main thread!
+                self?.isFetching = true
+            }
             let (data, _) = try await URLSession.shared.data(from: updateURL)
             let decodedResult:RosterUpdate = try JSONDecoder().decode(RosterUpdate.self, from: data)
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
                 guard let self = self else {
-                    print("Self not in memory for updating roster value!")
+                    print("Self not in memory!")
                     return
                 }
                 self.updates.updateValue(decodedResult, forKey: id)
-                //self.isFetching = false
+                self.isFetching = false
             }
-            self.isFetching = false
             print("Fetched update with id: \(id)")
         } catch {
-            print("Request Failed!!")
             print(error)
         }
     }

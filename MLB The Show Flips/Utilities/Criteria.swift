@@ -8,10 +8,10 @@
 import Foundation
 
 class Criteria {
-    var minProfit = 5000
-    static let initProfit:Int = 5000
-    var budget = 45000
-    static let initBudget = 45000
+    var minProfit = 2500
+    static let initProfit:Int = 2500
+    var budget = 55000
+    static let initBudget = 55000
     static let startPage = 1
     var excludedSeries:[String] = []
     

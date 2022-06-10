@@ -34,49 +34,49 @@ struct RosterUpdateHistoryView: View {
         _rosterUpdateController = ObservedObject.init(initialValue: ruc)
     }
     
+    //TODO: NavigationStack and $path time; refer to naviagation cookbook WWDC 22 talk
+    
+    //@State private var presentedEntries = NavigationPath()
     
     var body: some View {
         //let listEntries = rosterUpdateController.updateHistory.roster_updates
         
         
-        LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
-            .edgesIgnoringSafeArea(.vertical)
-            .overlay (
-                
-                //VStack{
-                //ScrollView {
-                    VStack {
-                        List(searchResults) { entry in
-                            NavigationLink("\(entry.name)", destination: RosterUpdateView(updateID: entry.id, gradColors: self.gradColors, rosterUpdateVM: self.rosterUpdateController))
-                                .foregroundColor(.black)
-                                .simultaneousGesture(TapGesture().onEnded { value in
-                                    print("fetching update with id: \(entry.id)")
-                                    Task(priority: .high) {
-                                        await self.rosterUpdateController.fetchUpdateForID(entry.id)
-                                    }
-                                })
+            
+            LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+                .overlay (
+                    
+                    //VStack{
+                    //ScrollView {
+                    NavigationStack {
+                        VStack {
+                            List(searchResults) { entry in
+                                NavigationLink("\(entry.name)") {
+                                    RosterUpdateView(updateID: entry.id, gradColors: self.gradColors, rosterUpdateVM: self.rosterUpdateController)
+                                }
                                 .listRowBackground(Color.clear)
                                 .foregroundColor(.black)
-                                //.padding()
-//                            UpdateEntryView(rosterUpdateEntry: entry, controller: self.rosterUpdateController, gradColors: gradColors)
-                            //                        NavigationLink("\(entry.name)", destination: RosterUpdateView(rosterUpdateController: self.rosterUpdateController))
-                            //                            .listRowBackground(Color.green)
-                            //                            .foregroundColor(.black)
-                            //                            .simultaneousGesture(TapGesture().onEnded {
-                            //                                print("fetching update with id: \(entry.id)")
-                            //                                Task.init {
-                            //                                    await rosterUpdateController.fetchUpdateForID(entry.id)
-                            //                                }
-                            //                            })
+                                //                                .simultaneousGesture(TapGesture().onEnded { value in
+                                //                                    print("fetching update with id: \(entry.id)")
+                                //                                    Task(priority: .high) {
+                                //                                        await self.rosterUpdateController.fetchUpdateForID(entry.id)
+                                //                                    }
+                                //                                })
+                                //                                .listRowBackground(Color.clear)
+                                //                                .foregroundColor(.black)
+                            }
+                            .listStyle(.inset)
+                            .padding(.top, 10)
+                            .searchable(text: $searchText, prompt: "Search Updates")
                         }
-                        .padding(.top, 10)
-                        .listStyle(.inset)
-                        .searchable(text: $searchText, prompt: "Search Updates")
+                        .navigationTitle("Roster Updates")
+                        .navigationBarTitleDisplayMode(.automatic)
+                        Spacer()
                     }
-                    
-                    
-               // }
-            )
+                        .background(.red)
+                        //.padding(.top, -150)
+                )
     }
 }
 
@@ -100,12 +100,12 @@ struct UpdateEntryView: View {
             NavigationLink("\(name)", destination: RosterUpdateView(updateID: self.id, gradColors: gradColors, rosterUpdateVM: self.controller))
                 .listRowBackground(Color.green)
                 .foregroundColor(.black)
-                .simultaneousGesture(TapGesture().onEnded {
-                    print("fetching update with id: \(self.id)")
-                    Task(priority: .high) {
-                        await controller.fetchUpdateForID(self.id)
-                    }
-                })
+//                .simultaneousGesture(TapGesture().onEnded {
+//                    print("fetching update with id: \(self.id)")
+//                    Task(priority: .high) {
+//                        await controller.fetchUpdateForID(self.id)
+//                    }
+//                })
             
         }
         .padding()

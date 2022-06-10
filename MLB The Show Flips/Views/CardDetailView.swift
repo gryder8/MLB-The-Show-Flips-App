@@ -17,7 +17,7 @@ import Charts
  Detail view for each card shown when the name is tapped
  */
 struct CardDetailView: View {
-    private let urlBaseString = "https://mlb21.theshow.com/items/"
+    private let urlBaseString = "https://mlb22.theshow.com/items/"
     private let calc:Calculator = Calculator()
     @ObservedObject var playerModel: PlayerDataModel //since we want to be able to refresh, we want to observe the changes to this object
     //note that we don't own this object so we use @ObservedObject and not @StateObject

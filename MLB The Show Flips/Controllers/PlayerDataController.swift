@@ -26,9 +26,9 @@ class PlayerDataController:ObservableObject {
     
     var criteria = Criteria()
     var calc = Calculator()
-    @Published var isLoading = false
+    @Published var isLoading = true
     
-    private let pageBaseURL = "https://mlb21.theshow.com/apis/listings.json?type=mlb_card&page="
+    private let pageBaseURL = "https://mlb22.theshow.com/apis/listings.json?type=mlb_card&page="
     
     func reset() {
         isFullyLoaded = false

@@ -7,11 +7,13 @@
 
 import SwiftUI
 
-struct RosterUpdateView: View {
+struct RosterUpdateView: View { //top-most view!
     
     @ObservedObject var rosterUpdateViewModel: RosterUpdateViewModel
     var gradColors: [Color]
     var updateId: Int
+    
+    @State var loadingUpdate = true
     
     init(updateID: Int, gradColors: [Color], rosterUpdateVM ruVM: RosterUpdateViewModel) {
         UINavigationBar.appearance().backgroundColor = .clear
@@ -27,31 +29,43 @@ struct RosterUpdateView: View {
     var body: some View {
         let item = rosterUpdateViewModel.updates[updateId] ?? RosterUpdate(attribute_changes: [])
         
-        if (rosterUpdateViewModel.isFetching) {
+        if (loadingUpdate) {
             LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay (
-                    ProgressView()
+                    VStack {
+                        Text("Loading...")
+                            .font(.system(size: 26, weight: .regular, design: .rounded))
+                        ProgressView()
+                            .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                            .scaleEffect(1.5, anchor: .center)
+                        Spacer()
+                    }
+                        .task {
+                            print("Fetching update...")
+                            DispatchQueue.main.async {
+                                loadingUpdate = true
+                            }
+                            await self.rosterUpdateViewModel.fetchUpdateForID(updateId)
+                            
+                            DispatchQueue.main.async {
+                                loadingUpdate = false
+                                print("Fetched update!")
+                            }
+                        }
                 )
         } else {
             LinearGradient(colors: gradColors, startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.vertical)
                 .overlay (
                     ScrollView {
-                        VStack(spacing: 15) {
+                        LazyVStack(spacing: 15) {
                             //ForEach(items) { item in //id is a UUID()
-                                RosterUpdateItemView(rosterUpdate: item)
-                            //}
+                            RosterUpdateItemView(rosterUpdate: item)
                         }
                     }
-//                        .task {
-//                            await rosterUpdateViewModel.fetchUpdateForID(self.updateId)
-//                        }
+                    
                 )
-            //This is causing it to pop back
-            //            .task {
-            //                await rosterUpdateController.fetchUpdateForID(21) //if I go this route, I need to pass an ID into the struct
-            //            }
         }
     }
 }
@@ -67,17 +81,25 @@ struct RosterUpdateItemView: View {
         
         ForEach(entry.attribute_changes) { playerChange in
             OverallChangeView(ratingChange: playerChange)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack (alignment: .center, spacing: 20) {
+            if (playerChange.changes.isEmpty) {
+                HStack {
                     Spacer()
-                    ForEach(playerChange.changes) { attribChange in
-                        AttributeView(attribChange: attribChange)
-                        
-                    }
+                    Text("No Attribute Changes!")
+                        .font(.headline)
+                        .italic()
                     Spacer()
                 }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack (alignment: .center, spacing: 20) {
+                        Spacer()
+                        ForEach(playerChange.changes) { attribChange in
+                            AttributeView(attribChange: attribChange)
+                        }
+                        Spacer()
+                    }
+                }
             }
-            
         }
     }
 }
@@ -162,7 +184,6 @@ struct AttributeView: View {
             }
         }
         .padding()
-        // }
     }
 }
 
@@ -176,6 +197,7 @@ struct RosterUpdateView_Previews: PreviewProvider {
             RosterUpdateView(updateID: 21, gradColors: testColors, rosterUpdateVM: ruController)
             AttributeView(attribChange: change)
             OverallChangeView(ratingChange: overallChange)
+            RosterUpdateItemView(rosterUpdate: RosterUpdate(attribute_changes: []))
         }
     }
 }
