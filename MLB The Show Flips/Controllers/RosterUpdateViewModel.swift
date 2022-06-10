@@ -12,7 +12,7 @@ class RosterUpdateViewModel: ObservableObject {
     @Published var updates: [Int: RosterUpdate] = [:]
     @Published var updateHistory: RosterUpdateHistory = RosterUpdateHistory(roster_updates: [])
     
-    @Published var isFetching: Bool  = false
+    private var isFetching: Bool  = false //for local non-duplication of requests only
     
     func fetchUpdateHistory() async {
         if (!updates.isEmpty) {
@@ -48,6 +48,7 @@ class RosterUpdateViewModel: ObservableObject {
     func fetchUpdateForID(_ id: Int) async {
         
         if (isFetching) {
+            print("***Already fetching!***")
             return //prevent making another request
         }
         
@@ -62,21 +63,24 @@ class RosterUpdateViewModel: ObservableObject {
         }
         
         do {
-            DispatchQueue.main.async { [weak self] in  //publish on main thread!
-                self?.isFetching = true
-            }
+            //DispatchQueue.main.async { [weak self] in  //publish on main thread!
+                self.isFetching = true
+            //}
+            
             let (data, _) = try await URLSession.shared.data(from: updateURL)
             let decodedResult:RosterUpdate = try JSONDecoder().decode(RosterUpdate.self, from: data)
             DispatchQueue.main.async { [weak self] in  //publish on main thread!
                 guard let self = self else {
-                    print("Self not in memory!")
+                    print("Self not in memory for updating roster value!")
                     return
                 }
                 self.updates.updateValue(decodedResult, forKey: id)
-                self.isFetching = false
+                //self.isFetching = false
             }
+            self.isFetching = false
             print("Fetched update with id: \(id)")
         } catch {
+            print("Request Failed!!")
             print(error)
         }
     }

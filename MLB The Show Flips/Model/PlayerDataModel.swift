@@ -58,6 +58,7 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
         
     }
     
+    @discardableResult
     public func getImageForModel() async -> Image { //NO AWAIT ON NETWORK CALLS HERE (DO NOT BLOCK)
         let itemURL: URL = URL(string: "\(self.imgURL)")!
         
@@ -73,10 +74,10 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
                     return Image(systemName: "person.crop.circle.badge.exclamationmark")
                 }
                 //print("UIImage processed for \(name)...")
-                
+                self.image = Image(uiImage: uiImage)
                 return Image(uiImage: uiImage)
             } catch {
-                print("***Failed to cache image with error: \(error.localizedDescription) \n")// URL used for api call: \(itemURL)")
+                print("***Failed to cache image with error: \(error.localizedDescription) \n") //URL used for api call: \(itemURL)")
                 self.image = Image(systemName: "person.crop.circle.badge.exclamationmark")
                 print("Fell back to default from system")
             }
