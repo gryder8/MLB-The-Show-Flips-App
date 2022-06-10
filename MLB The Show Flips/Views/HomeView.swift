@@ -26,7 +26,7 @@ struct MainListContentRow: View {
     
     @Binding var gradColors: [Color]
     let urlBaseString = "https://mlb21.theshow.com/items/"
-
+    
     var body: some View {
         let calc = Calculator()
         VStack {
@@ -127,6 +127,15 @@ struct ContentView: View {
                                     .font(.system(size: 30, design: .rounded))
                                 StubSymbol()
                             }
+                            if playerDataController.isLoading {
+                                VStack {
+                                    Text("Loading...")
+                                        .font(.system(size: 28, weight: .medium, design: .rounded))
+                                    ProgressView()
+                                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
+                                        .scaleEffect(1.5, anchor: .center)
+                                }
+                            }
                             LazyVStack {
                                 ForEach(playerDataController.sortedModels()) { playerModel in
                                     //let playerItem = playerModel.item
@@ -142,11 +151,7 @@ struct ContentView: View {
                                 }
                                 
                                 
-                                if playerDataController.isLoading {
-                                    ProgressView()
-                                        .progressViewStyle(DarkBlueShadowProgressViewStyle())
-                                        .scaleEffect(1.5, anchor: .center)
-                                }
+                                
                                 
                             }
                         }
