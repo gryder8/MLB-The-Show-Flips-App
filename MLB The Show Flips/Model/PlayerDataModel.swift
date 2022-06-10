@@ -31,6 +31,26 @@ class PlayerDataModel: ObservableObject, Equatable, Identifiable {
     var imgURL: URL //constructor
     var page: Int
     
+    private var cachedOutlierRemovedHistory: [HistoricalPriceValue]? //cache the version with no outliers so we don't have to compute this when calling the property as it somewhat expensive and O(n)
+    
+    var priceHistoryRemovingOutliers: [HistoricalPriceValue] {
+        if (cachedOutlierRemovedHistory != nil) {
+            print("Returning cached values of size: \(cachedOutlierRemovedHistory!.count)")
+            return cachedOutlierRemovedHistory!
+        }
+        let profitsNonOutlying:[Int] = price_history.compactMap { element in
+            element.profit
+        }.outliersRemoved()
+        //profits = profits.outliersRemoved()
+        
+        let result = price_history.filter { hist in
+            return profitsNonOutlying.contains(hist.profit)
+        }
+        cachedOutlierRemovedHistory = result
+        return result
+        
+    }
+    
     var isFetching = false
     var hasCachedImage = false //flags so we can call fetching from init()
     var hasCachedTransactions = false

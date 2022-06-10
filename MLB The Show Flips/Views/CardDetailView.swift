@@ -57,6 +57,15 @@ struct CardDetailView: View {
             )
     }
     
+    @State private var removingOutliersInChart = true
+    private var chartData: [DataEntry] {
+        if (removingOutliersInChart) {
+            return [.init(name: "Profit", data:  playerModel.priceHistoryRemovingOutliers.sorted(by: priceHistorySorter(_:_:)))]
+        } else {
+            return [.init(name: "Profit", data:  playerModel.price_history.sorted(by: priceHistorySorter(_:_:)))]
+        }
+    }
+    
     var body: some View {
         LinearGradient(colors: gradientColors, startPoint: .top, endPoint: .bottom)
             .edgesIgnoringSafeArea(.vertical)
@@ -92,26 +101,29 @@ struct CardDetailView: View {
                             let rates  = calc.getRates(priceHistory: playerModel.price_history)
                             let chartStyle = ChartStyle(backgroundColor: .clear, accentColor: gradientColors.first!, secondGradientColor: gradientColors.last!, textColor: .black, legendTextColor: .black, dropShadowColor: gradientColors.last!)
                             if #available(iOS 16.0, *) {
-                                Text("Profit History")
+                                Text("Daily Profit History")
                                     .font(.system(size: 20, weight: .light, design: .rounded))
                                     .underline()
+                                Toggle("Remove Outliers: ", isOn: $removingOutliersInChart)
+                                    .padding(.horizontal, 120)
                             } else {
                                 Text("Recent Trends")
                                     .font(.system(size: 20, weight: .light, design: .rounded))
                                     .underline()
                             }
+                            
                             HStack (spacing: 10){
                                 if #available(iOS 16.0, *) {
-                                    let chartData: [DataEntry] = [
-                                        .init(name: "Profit", data:  playerModel.price_history.sorted(by: priceHistorySorter(_:_:) ))
-                                    ]
+//                                    chartData = [
+//
+//                                    ]
                                     Chart(chartData) { dataObj in
                                         ForEach(dataObj.data) { element in
                                             LineMark(
-                                                x: .value("Day", element.dateAsDateObject), y: .value("Profit", element.profit))
-                                            //.foregroundStyle(.red.gradient)
+                                                x: .value("Day", element.dateAsDateObject),
+                                                y: .value("Profit", element.profit))
                                         }
-                                        .symbol(by: .value("Profit", dataObj.name))
+                                        .symbol(by: .value("Flip Profit", dataObj.name))
                                         .interpolationMethod(.catmullRom)
                                     }
                                     .frame(height: 300)
